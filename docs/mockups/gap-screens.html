@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odo — 新增功能 UI 设计 / Gap screens</title>
+<style>
+  :root {
+    --bg: #070a12;
+    --screen-a: #0a0f1a;
+    --screen-b: #141a29;
+    --glass-body:
+      radial-gradient(150% 110% at 2% -12%, rgba(255,255,255,.10), transparent 56%),
+      linear-gradient(150deg, rgba(255,255,255,.075), rgba(255,255,255,.028) 46%, rgba(255,255,255,.05));
+    --glass-body-soft:
+      radial-gradient(150% 110% at 2% -12%, rgba(255,255,255,.075), transparent 56%),
+      linear-gradient(150deg, rgba(255,255,255,.05), rgba(255,255,255,.016) 52%, rgba(255,255,255,.034));
+    --glass-rim: linear-gradient(150deg, rgba(255,255,255,.50), rgba(255,255,255,.10) 34%, rgba(255,255,255,.03) 64%, rgba(255,255,255,.20));
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 14px 34px rgba(0,0,0,.26);
+    --glass-blur: blur(24px) saturate(175%);
+    --accent: #5cc7ff;
+    --green: #5cd98f;
+    --orange: #ffaa4d;
+    --red: #ff6e6e;
+    --purple: #ad8cff;
+    --text: #f5f7fa;
+    --muted: rgba(235, 240, 255, .55);
+    --faint: rgba(235, 240, 255, .32);
+  }
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(1000px 600px at 15% -10%, rgba(92, 199, 255, .10), transparent 60%),
+      radial-gradient(800px 500px at 90% 10%, rgba(173, 140, 255, .07), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif;
+    padding: 56px 40px 100px;
+  }
+  .page-head { max-width: 1680px; margin: 0 auto 44px; }
+  .eyebrow { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: -.02em; margin: 10px 0 8px; }
+  .lede { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 860px; margin: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 22px; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; }
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .toc a {
+    font-size: 11.5px; color: var(--muted); text-decoration: none; padding: 6px 11px;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03);
+  }
+  .toc a:hover { color: var(--accent); border-color: rgba(92,199,255,.35); }
+
+  .frames {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 56px 48px; align-items: flex-start;
+  }
+  .frame { width: 390px; }
+  .phone {
+    width: 390px; height: 844px; padding: 10px; border-radius: 56px;
+    background: #000;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(255,255,255,.12);
+    position: relative;
+  }
+  .screen {
+    position: relative; height: 100%; border-radius: 46px; overflow: hidden;
+    background:
+      radial-gradient(130% 42% at 50% -8%, rgba(255, 255, 255, .07), transparent 70%),
+      radial-gradient(118% 46% at 16% 32%, rgba(92, 199, 255, .18), transparent 70%),
+      radial-gradient(100% 42% at 96% 50%, rgba(173, 140, 255, .15), transparent 70%),
+      radial-gradient(120% 50% at 50% 112%, rgba(64, 196, 214, .12), transparent 72%),
+      linear-gradient(180deg, var(--screen-a), var(--screen-b));
+    display: flex; flex-direction: column;
+  }
+  .island {
+    position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+    width: 112px; height: 32px; border-radius: 20px; background: #000; z-index: 30;
+  }
+  .status {
+    height: 54px; flex: none; display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 26px 6px; font-size: 13px; font-weight: 600; letter-spacing: .02em; z-index: 20;
+  }
+  .status-right { display: flex; align-items: center; gap: 6px; }
+  .bars { display: flex; align-items: flex-end; gap: 2px; height: 10px; }
+  .bars i { width: 3px; background: var(--text); border-radius: 1px; }
+  .bars i:nth-child(1) { height: 4px; } .bars i:nth-child(2) { height: 6px; }
+  .bars i:nth-child(3) { height: 8px; } .bars i:nth-child(4) { height: 10px; }
+  .batt { width: 22px; height: 11px; border: 1px solid rgba(255,255,255,.6); border-radius: 3px; padding: 1px; }
+  .batt::after { content: ""; display: block; width: 74%; height: 100%; background: var(--text); border-radius: 1px; }
+
+  .content { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 16px 100px; scrollbar-width: none; }
+  .content::-webkit-scrollbar { display: none; }
+  .content.no-tab { padding-bottom: 24px; }
+
+  .nav.head {
+    position: sticky; top: 0; z-index: 15; isolation: isolate; flex: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin: 0 -16px 12px; padding: 14px 16px 12px; border-radius: 0;
+    transition: margin .22s cubic-bezier(.32,.72,0,1), padding .22s cubic-bezier(.32,.72,0,1),
+                border-radius .22s cubic-bezier(.32,.72,0,1);
+  }
+  .nav.head::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid transparent;
+    border-radius: inherit; opacity: 0;
+    background: linear-gradient(150deg, rgba(255,255,255,.13), rgba(255,255,255,.05) 46%, rgba(255,255,255,.07)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 14px 30px rgba(0,0,0,.32);
+    transition: opacity .18s ease;
+  }
+  .nav.head.is-stuck, .nav.head.wrapped { margin: 0 -4px 12px; padding: 10px 16px; border-radius: 28px; }
+  .nav.head.is-stuck::before, .nav.head.wrapped::before { opacity: 1; }
+  .nav-group { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+  .filters { margin: 4px 0 16px; flex: none; }
+  .tabbar {
+    position: absolute; left: 12px; right: 12px; bottom: 10px; height: 64px; z-index: 20;
+    display: flex; gap: 2px; padding: 6px;
+    border-radius: 26px; border: 1px solid transparent;
+    background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.04)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 18px 40px rgba(0,0,0,.42);
+  }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 20px; color: var(--faint); font-size: 9.5px; }
+  .tab.on {
+    color: var(--accent);
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.26);
+  }
+  .tab .icon { width: 22px; height: 22px; }
+
+  .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .icon.sm { width: 16px; height: 16px; }
+  .icon.lg { width: 26px; height: 26px; }
+
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0 10px; }
+  .nav-title { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+  .nav-sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+    color: rgba(255, 255, 255, .74); flex: none;
+  }
+  .nav-caption { color: var(--muted); font-size: 12px; margin: 0 0 6px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .pill.online { color: var(--green); background: rgba(92, 217, 143, .14); }
+  .pill.charging { color: var(--orange); background: rgba(255, 170, 77, .14); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .card {
+    padding: 16px; border: 1px solid transparent; border-radius: 24px;
+    background: var(--glass-body) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+  }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .section-title { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+  .cap { color: var(--muted); font-size: 12px; }
+  .cap-sm { color: var(--faint); font-size: 11px; }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  .seg {
+    display: flex; gap: 4px; padding: 3px; border-radius: 16px;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.05) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  }
+  .seg div { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); padding: 7px 0; border-radius: 13px; }
+  .seg div.on {
+    color: var(--accent);
+    background: linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.30), 0 4px 12px rgba(0,0,0,.20);
+  }
+  .seg.small div { padding: 5px 0; font-size: 11px; }
+
+  .ring-wrap { display: flex; align-items: center; gap: 20px; }
+  .ring { position: relative; width: 132px; height: 132px; flex: none; }
+  .ring svg { width: 132px; height: 132px; transform: rotate(-90deg); }
+  .ring .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .ring .big { font-size: 28px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .ring .sub { font-size: 10px; color: var(--muted); }
+  .ring.sm { width: 96px; height: 96px; }
+  .ring.sm svg { width: 96px; height: 96px; }
+  .ring.sm .big { font-size: 22px; }
+
+  .range-num { font-size: 34px; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .range-unit { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+
+  .map { position: relative; height: 206px; border-radius: 14px; overflow: hidden; background: radial-gradient(120% 120% at 70% 20%, #1b2740 0%, #111a2a 55%, #0d1421 100%); }
+  .map .roads { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map .water { position: absolute; right: -18%; top: 52%; width: 58%; height: 80%; background: #14243c; border-radius: 50%; transform: rotate(-18deg); opacity: .9; }
+  .pin { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid rgba(92,199,255,.28); box-shadow: 0 0 0 8px rgba(92,199,255,.10); transform: translate(-50%, -50%); }
+  .map-chip, .map-link, .map-pill {
+    position: absolute; display: flex; align-items: center; gap: 6px; padding: 7px 11px;
+    border-radius: 999px; font-size: 11px; border: 1px solid transparent;
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.05)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px rgba(0,0,0,.28);
+  }
+  .map-chip { left: 10px; bottom: 10px; }
+  .map-chip .icon { color: var(--accent); }
+  .map-link { right: 10px; bottom: 10px; color: var(--accent); }
+  .map-pill { left: 10px; top: 10px; padding: 6px 10px; color: var(--muted); }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    padding: 14px 16px; border: 1px solid transparent; border-radius: 22px;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .tile .icon { color: var(--accent); margin-bottom: 10px; }
+  .tile .label { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .tile .value { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .value small { font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 2px; }
+
+  .mini-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mini-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .mini-row:first-child { padding-top: 0; }
+  .mini-row .icon { color: var(--muted); }
+  .mini-row .label { flex: 1; font-size: 13px; color: var(--muted); }
+  .mini-row .value { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--green); } .warn { color: var(--orange); }
+
+  .stat-strip { display: flex; gap: 4px; }
+  .stat-strip > div { flex: 1; min-width: 0; }
+  .stat-strip .n { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat-strip .n small { font-size: 11px; font-weight: 500; color: var(--muted); }
+  .stat-strip .l { font-size: 11px; color: var(--muted); margin-top: 4px; white-space: nowrap; }
+  /* four columns on a 326 pt card: the number has to give way, not the label */
+  .stat-strip.four .n { font-size: 16px; letter-spacing: -.01em; }
+  .stat-strip.four .n small { font-size: 9.5px; }
+
+  .day { display: flex; justify-content: space-between; align-items: baseline; margin: 16px 2px 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .day span:last-child { font-weight: 500; color: var(--faint); font-variant-numeric: tabular-nums; }
+
+  .trip { display: grid; grid-template-columns: 44px 14px 1fr auto; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .trip:last-child { border-bottom: 0; }
+  .trip .times { display: flex; flex-direction: column; justify-content: space-between; padding: 1px 0; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rail { position: relative; }
+  .rail::before { content: ""; position: absolute; left: 6px; top: 7px; bottom: 7px; width: 2px; background: rgba(255,255,255,.12); border-radius: 2px; }
+  .rail .d1, .rail .d2 { position: absolute; left: 1px; width: 12px; height: 12px; border-radius: 50%; }
+  .rail .d1 { top: 0; background: var(--green); box-shadow: 0 0 0 3px rgba(92,217,143,.12); }
+  .rail .d2 { bottom: 0; background: var(--orange); box-shadow: 0 0 0 3px rgba(255,170,77,.12); }
+  .trip .places { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; min-width: 0; }
+  .trip .places div { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trip .places div:first-child { font-weight: 600; }
+  .trip .places div:last-child { color: var(--muted); }
+  .trip .right { text-align: right; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .trip .right .km { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trip .right .min { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .trip .meta { grid-column: 3 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 3px 5px; margin-top: 7px; font-size: 10px; color: var(--muted); }
+  .trip .meta .meta-left { display: flex; gap: 5px; }
+  .trip .meta span { white-space: nowrap; }
+  .trip .meta .grow { flex: 1; }
+  .trip .meta .chip { flex: none; margin-left: auto; }
+
+  .chart-card {
+    padding: 14px 16px 8px; border: 1px solid transparent; border-radius: 24px;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .chart-head .t { font-size: 13px; font-weight: 600; }
+  .chart-head .v { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .soc { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+  .soc .track { position: relative; flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); }
+  .soc .fill { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, var(--green), #8ce8ae); }
+  .soc .p { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .settings-group {
+    border: 1px solid transparent; border-radius: 22px; overflow: hidden;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .srow { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .srow:last-child { border-bottom: 0; }
+  .srow .label { flex: 1; font-size: 13px; }
+  .srow .value { font-size: 12px; color: var(--muted); max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .srow .icon { color: var(--faint); }
+  .switch { width: 45px; height: 27px; border-radius: 999px; background: linear-gradient(180deg, #7ad4ff, #3fb0ec); box-shadow: inset 0 1px 0 rgba(255,255,255,.50); position: relative; flex: none; }
+  .switch::after { content: ""; position: absolute; right: 3px; top: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; }
+  .switch.off { background: rgba(255,255,255,.14); box-shadow: inset 0 1px 0 rgba(255,255,255,.10); }
+  .switch.off::after { right: auto; left: 3px; background: rgba(255,255,255,.72); }
+
+  .primary {
+    height: 50px; border-radius: 18px; display: grid; place-items: center;
+    color: #05131d; font-size: 15px; font-weight: 700; border: 1px solid transparent;
+    background: linear-gradient(180deg, #8ad9ff, #46baf5) padding-box,
+                linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.15)) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 12px 26px rgba(92,199,255,.30);
+  }
+  .primary.ghost {
+    color: var(--accent); background: rgba(92,199,255,.10) padding-box, var(--glass-rim) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+
+  .caption { margin-top: 16px; display: flex; align-items: baseline; gap: 10px; }
+  .caption .idx { font-size: 11px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .caption .name { font-size: 14px; font-weight: 600; }
+  .caption .api { font-size: 11px; color: var(--faint); margin-left: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  .banner {
+    display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 16px;
+    color: var(--orange); font-size: 11px; border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(255,170,77,.16), rgba(255,170,77,.05)) padding-box,
+                linear-gradient(150deg, rgba(255,170,77,.40), rgba(255,170,77,.08) 60%, rgba(255,255,255,.06)) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  }
+  .banner .icon { width: 15px; height: 15px; }
+
+  /* ---------- new primitives for the gap screens ---------- */
+
+  /* C-39 status timeline: one 24 h ribbon, segments weighted by duration */
+  .tl { display: flex; gap: 2px; height: 12px; margin: 12px 0 6px; }
+  .tl i { height: 100%; border-radius: 3px; min-width: 3px; }
+  .tl-axis { display: flex; justify-content: space-between; color: var(--faint); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .st-online { background: rgba(255,255,255,.45); }
+  .st-driving { background: var(--green); }
+  .st-charging { background: var(--orange); }
+  .st-asleep { background: rgba(255,255,255,.18); }
+  .st-updating { background: var(--purple); }
+  .st-unknown { background: rgba(255,255,255,.06); }
+
+  .legend-row { display: flex; flex-wrap: wrap; gap: 9px 12px; margin-top: 10px; font-size: 10.5px; color: var(--muted); }
+  .legend-row span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-row i { width: 8px; height: 8px; border-radius: 2px; }
+  .legend-row b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* C-40 proportion bar: a stacked share, used for sleep share and state mix */
+  .prop { display: flex; gap: 2px; height: 8px; }
+  .prop i { height: 100%; border-radius: 2px; }
+  .prop i:first-child { border-radius: 4px 2px 2px 4px; }
+  .prop i:last-child { border-radius: 2px 4px 4px 2px; }
+  .prop-legend { display: flex; gap: 10px; margin-top: 7px; font-size: 10.5px; color: var(--muted); }
+  .prop-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .prop-legend i { width: 6px; height: 6px; border-radius: 2px; }
+
+  /* C-41 mini bars: six months, one value each */
+  .mini-bars { display: flex; align-items: flex-end; gap: 7px; height: 58px; }
+  .mini-bars .m { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%; }
+  .mini-bars .m i { width: 100%; border-radius: 4px; background: linear-gradient(180deg, rgba(92,199,255,.95), rgba(92,199,255,.22)); min-height: 3px; }
+  .mini-bars .m.on i { background: linear-gradient(180deg, #a8e2ff, rgba(92,199,255,.35)); }
+  .mini-bars .m span { font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; }
+
+  /* C-42 score ring: a 0–100 score with a rating word underneath */
+  .score { display: flex; align-items: center; gap: 18px; }
+  .score .ring .big { font-size: 26px; }
+  .score .verdict { font-size: 15px; font-weight: 700; }
+  .score .verdict small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+
+  /* C-43 comparison rows: one bar per group against a shared mean line */
+  .comp { position: relative; padding: 6px 0; }
+  .comp .top { display: flex; align-items: baseline; justify-content: space-between; font-size: 11px; margin-bottom: 5px; }
+  .comp .top .name { color: var(--muted); }
+  .comp .top .v { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .comp .track { position: relative; height: 8px; border-radius: 4px; background: rgba(255,255,255,.10); }
+  .comp .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: linear-gradient(90deg, rgba(92,199,255,.90), rgba(92,199,255,.40)); }
+  .comp .fill.best { background: linear-gradient(90deg, rgba(92,217,143,.95), rgba(92,217,143,.40)); }
+  .comp .mean { position: absolute; top: -4px; bottom: -4px; width: 1px;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.60) 0 2px, rgba(255,255,255,0) 2px 4px); }
+  .delta { font-size: 10.5px; font-variant-numeric: tabular-nums; }
+  .delta.better { color: var(--green); }
+  .delta.worse { color: var(--orange); }
+
+  /* C-44 month calendar: 7 columns, a mark per day */
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal .wd { text-align: center; font-size: 10px; color: var(--faint); padding-bottom: 4px; }
+  .cal .d {
+    position: relative; aspect-ratio: 1 / 1.12; border-radius: 11px; display: flex;
+    flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .cal .d.on { background: rgba(92,199,255,.10); color: var(--text); }
+  .cal .d.today { box-shadow: inset 0 0 0 1px rgba(92,199,255,.55); color: var(--accent); }
+  .cal .d .marks { display: flex; gap: 2px; height: 5px; }
+  .cal .d .marks i { width: 4px; height: 4px; border-radius: 50%; }
+  .cal .d .km { font-size: 8.5px; color: var(--faint); }
+  .spec .cal { max-width: 380px; }
+
+  /* meter rows for the driving-profile block */
+  .meter { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .meter .label { width: 62px; font-size: 11px; color: var(--muted); flex: none; }
+  .meter .track { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.07); }
+  .meter .fill { height: 6px; border-radius: 3px; background: linear-gradient(90deg, rgba(92,199,255,.95), rgba(92,199,255,.40)); }
+  .meter .v { width: 34px; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; flex: none; }
+
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 999px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .chip.dc { color: var(--orange); background: rgba(255,170,77,.14); }
+  .chip.ac { color: var(--green); background: rgba(92,217,143,.14); }
+  .chip.neutral { color: var(--muted); background: rgba(255,255,255,.07); }
+  .chip.sel { color: var(--accent); background: rgba(92,199,255,.16); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .note { font-size: 10.5px; line-height: 1.6; color: var(--faint); margin-top: 10px; }
+
+  /* bottom sheet over a map or a dimmed page */
+  .scrim { position: absolute; inset: 0; background: rgba(4,7,13,.55); z-index: 25; }
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 26;
+    padding: 10px 16px 20px; border-radius: 28px 28px 0 0;
+    background: linear-gradient(180deg, rgba(23,32,50,.96), rgba(16,23,37,.98));
+    border-top: 1px solid transparent;
+    box-shadow: 0 -20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.16);
+  }
+  .grabber { width: 38px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.22); margin: 0 auto 14px; }
+
+  /* map-first history frame */
+  .map-full { position: absolute; inset: 0; background: radial-gradient(120% 120% at 70% 20%, #1b2740 0%, #111a2a 55%, #0d1421 100%); }
+  .map-full .roads { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .track-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- component specimen blocks ---------- */
+  .fam { max-width: 1680px; margin: 72px auto 0; }
+  .fam > h2 { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+  .fam > .fam-sub { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 0 0 26px; max-width: 820px; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 22px; }  .spec { border: 1px solid rgba(255,255,255,.07); border-radius: 22px; padding: 18px; background: rgba(255,255,255,.018); min-width: 0; }
+  .spec.wide { grid-column: 1 / -1; }
+  .spec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .spec-id { font-size: 11px; color: var(--accent); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .spec h3 { font-size: 15px; margin: 0; font-weight: 600; }
+  .spec-meta { margin-left: auto; font-size: 10px; color: var(--faint); white-space: nowrap; }
+  .spec-note { color: var(--muted); font-size: 11.5px; line-height: 1.65; margin: 0 0 14px; }
+  .spec-note b { color: rgba(235,240,255,.78); font-weight: 600; }
+  .stage {
+    background:
+      radial-gradient(130% 42% at 50% -8%, rgba(255,255,255,.07), transparent 70%),
+      radial-gradient(118% 46% at 16% 32%, rgba(92,199,255,.18), transparent 70%),
+      linear-gradient(180deg, var(--screen-a), var(--screen-b));
+    border-radius: 14px; padding: 16px; position: relative; overflow: hidden;
+  }
+  .label-mini { font-size: 10px; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin: 16px 0 8px; }
+  .label-mini:first-child { margin-top: 0; }
+
+  @media (max-width: 900px) {
+    body { padding: 32px 18px 60px; }
+    .frames { gap: 40px; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.6"/><circle cx="18" cy="5" r="2.6"/><path d="M8.6 19h4.4a4 4 0 0 0 4-4V7.6"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M20.5 16a9 9 0 1 0-17 0"/><path d="M12 14l4-4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0z"/><path d="M12 16v6"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9 0 12-4 16-9 16z"/><path d="M4 21c4-8 8-12 13-14"/></symbol>
+  <symbol id="i-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 15v5h-5M15 4h5v5M9 20H4v-5"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h13l-3 5 3 5H5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></symbol>
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.5 7l17 10M20.5 7l-17 10"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16v-3l2-5h12l2 5v3"/><path d="M3 16h18v3H3z"/></symbol>
+</svg>
+
+<header class="page-head">
+  <div class="eyebrow">Odo · 补充功能 UI · 2026-11-04</div>
+  <h1>新增功能界面设计</h1>
+  <p class="lede">
+    对应 <a href="../GAP-ANALYSIS.zh-CN.md" style="color:var(--accent)">GAP-ANALYSIS.zh-CN.md</a> 里的 P0 与 P1 项：
+    今日看板与状态时间轴、更厚的行程行、行程日历、停车记录、电池健康、能耗分析、动能回收、轨迹筛选。
+    全部沿用现有玻璃语言、四 tab 信息架构与 <code>HeaderBar</code> 的包裹规则，没有新增强调色，也没有新增 tab。
+    每一屏都标了数据来源与不可用时的显示方式。
+  </p>
+  <div class="legend">
+    <span><i class="swatch" style="background:#5cc7ff"></i>accent 选中 / 主指标</span>
+    <span><i class="swatch" style="background:#5cd98f"></i>green 行驶 / 健康 / 充电中（AC）</span>
+    <span><i class="swatch" style="background:#ffaa4d"></i>orange 充电中 / 警示 / 快充</span>
+    <span><i class="swatch" style="background:#ad8cff"></i>purple 更新中</span>
+    <span><i class="swatch" style="background:rgba(255,255,255,.45)"></i>白 45% 在线</span>
+    <span><i class="swatch" style="background:rgba(255,255,255,.18)"></i>白 18% 休眠</span>
+  </div>
+  <nav class="toc">
+    <a href="#s01">01 今日看板</a>
+    <a href="#s02">02 状态图例</a>
+    <a href="#s03">03 行程行</a>
+    <a href="#s04">04 行程日历</a>
+    <a href="#s05">05 停车记录</a>
+    <a href="#s06">06 停车详情</a>
+    <a href="#s07">07 电池健康</a>
+    <a href="#s08">08 能耗分析</a>
+    <a href="#s09">09 动能回收</a>
+    <a href="#s10">10 轨迹筛选</a>
+    <a href="#components">组件 C-39 – C-44</a>
+  </nav>
+</header>
+
+<div class="frames">
+
+  <!-- 01 — Live: today board + state timeline -->
+  <div class="frame" id="s01">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div>
+                <div class="nav-title">★Roadster Lite™</div>
+                <div class="nav-sub">Model 3 · LR AWD</div>
+              </div>
+            </div>
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-refresh"/></svg></div>
+              <div class="nav-btn"><svg class="icon"><use href="#i-sliders"/></svg></div>
+            </div>
+          </div>
+
+          <div class="row-between" style="margin:8px 2px 14px">
+            <span class="pill online"><i class="dot"></i>在线</span>
+            <span class="cap">最后更新 12 秒前</span>
+          </div>
+
+          <!-- today board -->
+          <div class="card" style="margin-bottom:12px">
+            <div class="row-between" style="margin-bottom:14px">
+              <div>
+                <div class="section-title" style="margin:0">今日</div>
+                <div class="cap-sm" style="margin-top:3px">11月4日 周三</div>
+              </div>
+              <div class="nav-group">
+                <div class="nav-btn" style="width:30px;height:30px"><svg class="icon sm"><use href="#i-calendar"/></svg></div>
+                <div class="nav-btn" style="width:30px;height:30px"><svg class="icon sm"><use href="#i-info"/></svg></div>
+                <div class="nav-btn" style="width:30px;height:30px"><svg class="icon sm"><use href="#i-expand"/></svg></div>
+              </div>
+            </div>
+
+            <div class="stat-strip">
+              <div><div class="n num">2<small> 次</small></div><div class="l">行程</div></div>
+              <div><div class="n num">24.6<small> km</small></div><div class="l">里程</div></div>
+              <div><div class="n num">1<small> 小时 </small>14<small> 分</small></div><div class="l">行驶</div></div>
+            </div>
+
+            <div class="soc" style="margin-top:16px">
+              <span class="p">4.4 kWh</span>
+              <div class="track"><div class="fill" style="left:0;width:58%"></div></div>
+              <span class="p">179 Wh/km</span>
+            </div>
+
+            <div class="tl" aria-hidden="true">
+              <i class="st-asleep" style="flex:464"></i>
+              <i class="st-online" style="flex:22"></i>
+              <i class="st-driving" style="flex:34"></i>
+              <i class="st-online" style="flex:5"></i>
+              <i class="st-charging" style="flex:40"></i>
+              <i class="st-asleep" style="flex:203"></i>
+              <i class="st-online" style="flex:14"></i>
+              <i class="st-asleep" style="flex:246"></i>
+              <i class="st-driving" style="flex:40"></i>
+              <i class="st-asleep" style="flex:372"></i>
+            </div>
+            <div class="tl-axis"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+
+            <div class="legend-row">
+              <span><i class="st-driving"></i>行驶 <b>1h14</b></span>
+              <span><i class="st-online"></i>在线 <b>41 分</b></span>
+              <span><i class="st-charging"></i>充电 <b>40 分</b></span>
+              <span><i class="st-asleep"></i>休眠 <b>21h25</b></span>
+            </div>
+
+            <div class="note">按本地时间统计近 24 小时；休眠占比高属于正常。</div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="row-between">
+              <div>
+                <div class="cap">续航</div>
+                <div style="margin-top:6px"><span class="range-num num">382</span><span class="range-unit">km</span></div>
+              </div>
+              <div class="ring sm">
+                <svg viewBox="0 0 96 96">
+                  <circle cx="48" cy="48" r="39" stroke="rgba(255,255,255,.08)" stroke-width="9" fill="none"/>
+                  <circle cx="48" cy="48" r="39" stroke="#5cd98f" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="181 245"/>
+                </svg>
+                <div class="ring-label"><div class="big num">74%</div><div class="sub">电量</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-title">月度里程</div>
+            <div class="mini-bars">
+              <div class="m"><i style="height:64%"></i><span>6月</span></div>
+              <div class="m"><i style="height:78%"></i><span>7月</span></div>
+              <div class="m"><i style="height:52%"></i><span>8月</span></div>
+              <div class="m"><i style="height:91%"></i><span>9月</span></div>
+              <div class="m"><i style="height:100%"></i><span>10月</span></div>
+              <div class="m on"><i style="height:23%"></i><span>11月</span></div>
+            </div>
+            <div class="row-between" style="margin-top:10px">
+              <span class="cap-sm">近 6 个月</span>
+              <span class="cap-sm num">2,946 km · 月均 491 km</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">01</span><span class="name">今日看板 + 状态时间轴</span><span class="api">/stats · /states</span></div>
+  </div>
+
+  <!-- 02 — state legend sheet -->
+  <div class="frame" id="s02">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div>
+                <div class="nav-title">★Roadster Lite™</div>
+                <div class="nav-sub">Model 3 · LR AWD</div>
+              </div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-refresh"/></svg></div><div class="nav-btn"><svg class="icon"><use href="#i-sliders"/></svg></div></div>
+          </div>
+          <div class="row-between" style="margin:8px 2px 14px">
+            <span class="pill online"><i class="dot"></i>在线</span>
+            <span class="cap">最后更新 12 秒前</span>
+          </div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-title">今日</div>
+            <div class="stat-strip">
+              <div><div class="n num">2<small> 次</small></div><div class="l">行程</div></div>
+              <div><div class="n num">24.6<small> km</small></div><div class="l">里程</div></div>
+              <div><div class="n num">1<small> 小时 </small>14<small> 分</small></div><div class="l">行驶</div></div>
+            </div>
+            <div class="tl" aria-hidden="true">
+              <i class="st-asleep" style="flex:464"></i><i class="st-online" style="flex:22"></i><i class="st-driving" style="flex:34"></i>
+              <i class="st-online" style="flex:5"></i><i class="st-charging" style="flex:40"></i><i class="st-asleep" style="flex:203"></i>
+              <i class="st-online" style="flex:14"></i><i class="st-asleep" style="flex:246"></i><i class="st-driving" style="flex:40"></i>
+              <i class="st-asleep" style="flex:372"></i>
+            </div>
+            <div class="tl-axis"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div>
+        </div>
+
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="row-between" style="margin-bottom:6px">
+            <div class="section-title" style="margin:0">车辆状态说明</div>
+            <div class="nav-btn" style="width:28px;height:28px"><svg class="icon sm"><use href="#i-back"/></svg></div>
+          </div>
+          <div class="cap" style="margin-bottom:14px">时间轴按车辆上报的状态切分，两个状态之间不会重叠。</div>
+
+          <div class="mini-row"><i class="st-online" style="width:10px;height:10px;border-radius:3px"></i><span class="label">在线</span><span class="value">车辆已唤醒，未行驶也未充电</span></div>
+          <div class="mini-row"><i class="st-driving" style="width:10px;height:10px;border-radius:3px"></i><span class="label">行驶</span><span class="value">有速度或挡位不在 P</span></div>
+          <div class="mini-row"><i class="st-charging" style="width:10px;height:10px;border-radius:3px"></i><span class="label">充电中</span><span class="value">充电枪已连接且正在充电</span></div>
+          <div class="mini-row"><i class="st-asleep" style="width:10px;height:10px;border-radius:3px"></i><span class="label">休眠</span><span class="value">车辆睡眠，数据停止更新</span></div>
+          <div class="mini-row"><i class="st-updating" style="width:10px;height:10px;border-radius:3px"></i><span class="label">更新中</span><span class="value">正在安装软件更新</span></div>
+          <div class="mini-row"><i class="st-unknown" style="width:10px;height:10px;border-radius:3px"></i><span class="label">未知</span><span class="value">这段时间没有上报记录</span></div>
+
+          <div class="primary ghost" style="margin-top:16px">返回近 24 小时</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">02</span><span class="name">状态图例</span><span class="api">/states</span></div>
+  </div>
+
+  <!-- 03 — drives list with richer rows -->
+  <div class="frame" id="s03">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group"><div class="nav-title">行程</div></div>
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-calendar"/></svg></div>
+              <div class="nav-btn"><svg class="icon"><use href="#i-map"/></svg></div>
+            </div>
+          </div>
+
+          <div class="seg" style="margin:4px 0 14px"><div class="on">7 天</div><div>30 天</div><div>90 天</div></div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="stat-strip four">
+              <div><div class="n num">118.5<small> km</small></div><div class="l">总里程</div></div>
+              <div><div class="n num">12<small> 次</small></div><div class="l">行程</div></div>
+              <div><div class="n num">6<small> 小时 </small>42<small> 分</small></div><div class="l">总时长</div></div>
+              <div><div class="n num">18<small> km/h</small></div><div class="l">均速</div></div>
+            </div>
+          </div>
+
+          <div class="day"><span>11月4日 周三</span><span>24.6 km</span></div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="trip" style="padding-top:0">
+              <div class="times"><span>06:52</span><span>07:26</span></div>
+              <div class="rail"><i class="d1"></i><i class="d2"></i></div>
+              <div class="places"><div>🏡 家</div><div>🏢 公司</div></div>
+              <div class="right"><span class="km">14.8 km</span><span class="min">34 分</span></div>
+              <div class="meta">
+                <span class="meta-left"><span>均速 26 km/h</span><span>·</span><span>78% → 71%</span></span>
+                <span class="grow"></span>
+                <span class="chip neutral">达成率 92%</span>
+              </div>
+            </div>
+            <div class="trip" style="border-bottom:0; padding-bottom:0">
+              <div class="times"><span>17:08</span><span>17:48</span></div>
+              <div class="rail"><i class="d1"></i><i class="d2"></i></div>
+              <div class="places"><div>🏢 公司</div><div>🛒 城西银泰</div></div>
+              <div class="right"><span class="km">9.8 km</span><span class="min">40 分</span></div>
+              <div class="meta">
+                <span class="meta-left"><span>均速 15 km/h</span><span>·</span><span>71% → 68%</span></span>
+                <span class="grow"></span>
+                <span class="chip neutral">达成率 96%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="day"><span>11月3日 周二</span><span>18.2 km</span></div>
+          <div class="card">
+            <div class="trip" style="padding-top:0; border-bottom:0; padding-bottom:0">
+              <div class="times"><span>08:02</span><span>08:41</span></div>
+              <div class="rail"><i class="d1"></i><i class="d2"></i></div>
+              <div class="places"><div>🏡 家</div><div>🏢 公司</div></div>
+              <div class="right"><span class="km">18.2 km</span><span class="min">39 分</span></div>
+              <div class="meta">
+                <span class="meta-left"><span>均速 28 km/h</span><span>·</span><span>74% → 68%</span></span>
+                <span class="grow"></span>
+                <span class="chip neutral">达成率 88%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab on"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">03</span><span class="name">行程行：均速 / 电量 / 达成率</span><span class="api">/drives</span></div>
+  </div>
+
+  <!-- 04 — trip calendar -->
+  <div class="frame" id="s04">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content no-tab">
+          <div class="nav head">
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div>
+              <div class="nav-title" style="font-size:18px">行程日历</div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-calendar"/></svg></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="row-between" style="margin-bottom:14px">
+              <div class="section-title" style="margin:0">2026 年 10 月</div>
+              <span class="cap-sm">上月</span>
+            </div>
+            <div class="stat-strip" style="margin-bottom:14px">
+              <div><div class="n num">349.0<small> km</small></div><div class="l">里程</div></div>
+              <div><div class="n num">31<small> 次</small></div><div class="l">行程</div></div>
+              <div><div class="n num">17<small>h</small>20</div><div class="l">驾驶时长</div></div>
+            </div>
+            <div class="stat-strip">
+              <div><div class="n num">6<small> 次</small></div><div class="l">充电</div></div>
+              <div><div class="n num">63<small> kWh</small></div><div class="l">充入电量</div></div>
+              <div><div class="n num">162<small> Wh/km</small></div><div class="l">平均能耗</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cal">
+              <div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>
+              <div class="d"></div><div class="d"></div><div class="d"></div>
+              <div class="d"><span>1</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">12</span></div>
+              <div class="d"><span>2</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">8</span></div>
+              <div class="d on"><span>3</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">18</span></div>
+              <div class="d on"><span>4</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">25</span></div>
+              <div class="d"><span>5</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>6</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>7</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d on"><span>8</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">14</span></div>
+              <div class="d on"><span>9</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">21</span></div>
+              <div class="d"><span>10</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d on"><span>11</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">32</span></div>
+              <div class="d on"><span>12</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">9</span></div>
+              <div class="d"><span>13</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>14</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d on"><span>15</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">17</span></div>
+              <div class="d on"><span>16</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">28</span></div>
+              <div class="d on"><span>17</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">11</span></div>
+              <div class="d on"><span>18</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">16</span></div>
+              <div class="d"><span>19</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>20</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>21</span><div class="marks"><i style="background:#5cd98f"></i></div><span class="km"></span></div>
+              <div class="d on"><span>22</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">23</span></div>
+              <div class="d on"><span>23</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">19</span></div>
+              <div class="d on"><span>24</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">13</span></div>
+              <div class="d on"><span>25</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">27</span></div>
+              <div class="d"><span>26</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>27</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d"><span>28</span><div class="marks"></div><span class="km"></span></div>
+              <div class="d on"><span>29</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">15</span></div>
+              <div class="d on"><span>30</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">22</span></div>
+              <div class="d on"><span>31</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">19</span></div>
+            </div>
+            <div class="prop-legend" style="margin-top:12px">
+              <span><i style="background:#5cc7ff"></i>有行程</span>
+              <span><i style="background:#5cd98f"></i>有充电</span>
+              <span style="margin-left:auto">数字为当日里程（km）</span>
+            </div>
+            <div class="note">「耗电拆分」需要功率积分，首版不显示，避免与 TeslaMate 口径不一致。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">04</span><span class="name">行程日历</span><span class="api">/stats?bucket=day</span></div>
+  </div>
+
+  <!-- 05 — parking list -->
+  <div class="frame" id="s05">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content no-tab">
+          <div class="nav head">
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div>
+              <div class="nav-title" style="font-size:18px">停车记录</div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-filter"/></svg></div></div>
+          </div>
+
+          <div class="seg" style="margin:4px 0 14px"><div class="on">7 天</div><div>30 天</div><div>90 天</div></div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="stat-strip four">
+              <div><div class="n num">12<small> 次</small></div><div class="l">停车</div></div>
+              <div><div class="n num">46<small>h</small>20</div><div class="l">总时长</div></div>
+              <div><div class="n num">41<small> W</small></div><div class="l">平均功率</div></div>
+              <div><div class="n num">1.9<small> kWh</small></div><div class="l">耗电</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,.06)">
+              <div class="row-between">
+                <span style="font-size:13px;font-weight:600">🏡 家</span>
+                <span class="num" style="font-size:13px;font-weight:600">3h12</span>
+              </div>
+              <div class="row-between" style="margin-top:4px">
+                <span class="cap-sm">今天 07:26 – 10:38 · 71% · 305 km</span>
+                <span class="cap-sm num">0.05 kWh</span>
+              </div>
+              <div class="prop" style="margin-top:9px">
+                <i class="st-asleep" style="flex:92"></i>
+                <i class="st-online" style="flex:8"></i>
+              </div>
+              <div class="prop-legend"><span><i class="st-asleep"></i>休眠 92%</span><span><i class="st-online"></i>在线 8%</span><span style="margin-left:auto">均 16 W</span></div>
+            </div>
+
+            <div style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,.06)">
+              <div class="row-between">
+                <span style="font-size:13px;font-weight:600">🏢 公司</span>
+                <span class="num" style="font-size:13px;font-weight:600">8h40</span>
+              </div>
+              <div class="row-between" style="margin-top:4px">
+                <span class="cap-sm">昨天 08:41 – 17:21 · 68% · 292 km</span>
+                <span class="cap-sm num">0.31 kWh</span>
+              </div>
+              <div class="prop" style="margin-top:9px">
+                <i class="st-asleep" style="flex:84"></i>
+                <i class="st-online" style="flex:16"></i>
+              </div>
+              <div class="prop-legend"><span><i class="st-asleep"></i>休眠 84%</span><span><i class="st-online"></i>在线 16%</span><span style="margin-left:auto">均 36 W</span></div>
+            </div>
+
+            <div style="padding:12px 0 0">
+              <div class="row-between">
+                <span style="font-size:13px;font-weight:600">🛒 城西银泰</span>
+                <span class="num" style="font-size:13px;font-weight:600">1h48</span>
+              </div>
+              <div class="row-between" style="margin-top:4px">
+                <span class="cap-sm">昨天 17:48 – 19:36 · 68% · 291 km</span>
+                <span class="cap-sm num">0.02 kWh</span>
+              </div>
+              <div class="prop" style="margin-top:9px">
+                <i class="st-asleep" style="flex:46"></i>
+                <i class="st-online" style="flex:54"></i>
+              </div>
+              <div class="prop-legend"><span><i class="st-asleep"></i>休眠 46%</span><span><i class="st-online"></i>在线 54%</span><span style="margin-left:auto">均 11 W</span></div>
+            </div>
+          </div>
+
+          <div class="note">停车区间由相邻行程与充电的空档推导；跨午夜的停车不拆分，按一次计。</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">05</span><span class="name">停车记录</span><span class="api">/parking（待建）</span></div>
+  </div>
+
+  <!-- 06 — parking detail -->
+  <div class="frame" id="s06">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content no-tab">
+          <div class="nav head">
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div>
+              <div class="nav-title" style="font-size:18px">停车详情</div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-pin"/></svg></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="cap">今天 07:26 – 10:38 · 家</div>
+            <div style="margin:8px 0 16px"><span class="range-num num">3</span><span class="range-unit">小时 12 分</span></div>
+            <div class="prop">
+              <i class="st-asleep" style="flex:92"></i>
+              <i class="st-online" style="flex:8"></i>
+            </div>
+            <div class="prop-legend">
+              <span><i class="st-asleep"></i>休眠 2h57</span>
+              <span><i class="st-online"></i>在线 15 分</span>
+              <span style="margin-left:auto">均 16 W</span>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-title">能耗</div>
+            <div class="mini-row"><span class="label">消耗电量</span><span class="value">0.05 kWh</span></div>
+            <div class="mini-row"><span class="label">续航损失</span><span class="value">0.4 km</span></div>
+            <div class="mini-row"><span class="label">每小时损失</span><span class="value">0.12 km/h</span></div>
+            <div class="mini-row"><span class="label">电量损耗</span><span class="value">0.7%</span></div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">车辆</div>
+            <div class="mini-row"><span class="label">电量变化</span><span class="value">71% → 70%</span></div>
+            <div class="mini-row"><span class="label">续航变化</span><span class="value">305 → 305 km</span></div>
+            <div class="mini-row"><span class="label">里程</span><span class="value">32,466 km</span></div>
+            <div class="mini-row"><span class="label">车外温度</span><span class="value">14.0 °C</span></div>
+            <div class="mini-row"><span class="label">哨兵模式</span><span class="value">关闭</span></div>
+          </div>
+
+          <div class="note">「每小时损失」= 续航损失 ÷ 停车小时数，保留两位小数；不足 1 小时按实际时长计算。</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">06</span><span class="name">停车详情</span><span class="api">/parking/:id</span></div>
+  </div>
+
+  <!-- 07 — battery health -->
+  <div class="frame" id="s07">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content no-tab">
+          <div class="nav head">
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div>
+              <div class="nav-title" style="font-size:18px">电池报告</div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-sliders"/></svg></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="score">
+              <div class="ring">
+                <svg viewBox="0 0 132 132">
+                  <circle cx="66" cy="66" r="54" stroke="rgba(255,255,255,.08)" stroke-width="12" fill="none"/>
+                  <circle cx="66" cy="66" r="54" stroke="#5cd98f" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="326 340"/>
+                </svg>
+                <div class="ring-label"><div class="big num">96</div><div class="sub">健康度</div></div>
+              </div>
+              <div>
+                <div class="verdict ok">优秀<small>容量保持高于同期 87% 的车辆</small></div>
+                <div class="cap-sm" style="margin-top:10px">累计 32,466 km · 37 次满充样本</div>
+              </div>
+            </div>
+            <div class="note">分数与对比为估算值，随样本增加而变化；样本不足 5 次时不显示评级。</div>
+          </div>
+
+          <div class="tiles" style="margin-bottom:12px">
+            <div class="tile"><div class="label">容量衰减</div><div class="value num">4.2<small>%</small></div></div>
+            <div class="tile"><div class="label">续航衰减</div><div class="value num">5.1<small>%</small></div></div>
+            <div class="tile"><div class="label">容量保持率</div><div class="value num ok">95.8<small>%</small></div></div>
+            <div class="tile"><div class="label">续航保持率</div><div class="value num ok">94.9<small>%</small></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">衰减分析</span><span class="v">容量 / 续航</span></div>
+            <div class="comp">
+              <div class="top"><span class="name">容量</span><span class="v num">75.1 / 78.4 kWh</span></div>
+              <div class="track"><div class="fill" style="width:95.8%"></div></div>
+            </div>
+            <div class="comp">
+              <div class="top"><span class="name">续航</span><span class="v num">492 / 518 km</span></div>
+              <div class="track"><div class="fill" style="width:94.9%"></div></div>
+            </div>
+            <div class="note">灰色轨道末端为出厂标称值，右侧空出的部分就是衰减量；最大容量为根据满充数据推测，不是车辆上报值。</div>
+          </div>
+
+          <div class="settings-group">
+            <div class="srow"><span class="label">使用系统数据</span><span class="value">开启</span><div class="switch"></div></div>
+            <div class="srow"><span class="label">满充样本</span><span class="value num">37 次</span><svg class="icon sm"><use href="#i-chevron"/></svg></div>
+            <div class="srow"><span class="label">最近一次满充</span><span class="value">10月28日 · 100%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">07</span><span class="name">电池健康</span><span class="api">/battery（待建）</span></div>
+  </div>
+
+  <!-- 08 — consumption analysis -->
+  <div class="frame" id="s08">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content no-tab">
+          <div class="nav head">
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div>
+              <div class="nav-title" style="font-size:18px">能耗分析</div>
+            </div>
+          </div>
+
+          <div class="seg" style="margin:4px 0 12px"><div class="on">软件版本</div><div>季节</div><div>温度</div></div>
+
+          <div class="row-between" style="margin:0 2px 14px">
+            <span class="cap">季节修正</span>
+            <div class="switch" style="transform:scale(.86)"></div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="stat-strip">
+              <div><div class="n num">156<small> Wh/km</small></div><div class="l">平均</div></div>
+              <div><div class="n num">2026.26</div><div class="l">最优版本</div></div>
+              <div><div class="n num">8.4<small>%</small></div><div class="l">版本差异</div></div>
+            </div>
+            <div class="cap-sm" style="margin-top:10px">累计 3,240 km · 4 个版本</div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="chart-head"><span class="t">各版本平均能耗</span><span class="v">越低越好</span></div>
+
+            <div class="comp">
+              <div class="top"><span class="name">2026.30.5 <span class="chip neutral" style="margin-left:4px">最新</span></span><span class="v num">161 <span class="delta worse">+3.2%</span></span></div>
+              <div class="track"><div class="fill" style="width:89.3%"></div><div class="mean" style="left:86.5%"></div></div>
+            </div>
+            <div class="comp">
+              <div class="top"><span class="name">2026.26.200</span><span class="v num">149 <span class="delta better">−4.5%</span></span></div>
+              <div class="track"><div class="fill best" style="width:82.6%"></div><div class="mean" style="left:86.5%"></div></div>
+            </div>
+            <div class="comp">
+              <div class="top"><span class="name">2026.20.3</span><span class="v num">154 <span class="delta better">−1.3%</span></span></div>
+              <div class="track"><div class="fill" style="width:85.4%"></div><div class="mean" style="left:86.5%"></div></div>
+            </div>
+            <div class="comp">
+              <div class="top"><span class="name">2026.14.2</span><span class="v num">158 <span class="delta worse">+1.3%</span></span></div>
+              <div class="track"><div class="fill" style="width:87.6%"></div><div class="mean" style="left:86.5%"></div></div>
+            </div>
+            <div class="note">竖线为全部版本均值 156 Wh/km；差值相对均值计算。</div>
+          </div>
+
+          <div class="settings-group">
+            <div class="srow"><span class="label">2026.30.5</span><span class="value">1,120 km · 10月12日至今</span></div>
+            <div class="srow"><span class="label">2026.26.200</span><span class="value">1,480 km · 8月2日 – 10月12日</span></div>
+            <div class="srow"><span class="label">2026.20.3</span><span class="value">420 km · 7月18日 – 8月2日</span></div>
+            <div class="srow"><span class="label">2026.14.2</span><span class="value">220 km · 7月1日 – 7月18日</span></div>
+          </div>
+
+          <div class="note">能耗口径：行程 energy_kwh ÷ 里程；不足 1 km 的行程不计入。</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">08</span><span class="name">能耗分析</span><span class="api">/updates + /drives</span></div>
+  </div>
+
+  <!-- 09 — regenerative braking -->
+  <div class="frame" id="s09">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content no-tab">
+          <div class="nav head">
+            <div class="nav-group">
+              <div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div>
+              <div class="nav-title" style="font-size:18px">动能回收</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-title">今日</div>
+            <div class="stat-strip">
+              <div><div class="n num">4.8<small> kWh</small></div><div class="l">回收电量</div></div>
+              <div><div class="n num">21<small>%</small></div><div class="l">回收效率</div></div>
+              <div><div class="n num">1<small>h</small>12</div><div class="l">回收时长</div></div>
+            </div>
+            <div class="note">回收效率 = 回收电量 ÷（回收电量 + 行驶耗电）。</div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">本周回收功率</span><span class="v">最高 68 kW</span></div>
+            <div class="mini-bars">
+              <div class="m"><i style="height:52%"></i><span>一</span></div>
+              <div class="m"><i style="height:68%"></i><span>二</span></div>
+              <div class="m on"><i style="height:100%"></i><span>三</span></div>
+              <div class="m"><i style="height:41%"></i><span>四</span></div>
+              <div class="m"><i style="height:74%"></i><span>五</span></div>
+              <div class="m"><i style="height:58%"></i><span>六</span></div>
+              <div class="m"><i style="height:36%"></i><span>日</span></div>
+            </div>
+            <div class="row-between" style="margin-top:10px">
+              <span class="cap-sm">本周峰值 68 kW</span>
+              <span class="cap-sm num">周均最高 61 kW</span>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">驾驶习惯画像</span><span class="v">45 天样本</span></div>
+            <div class="meter"><span class="label">回收占比</span><div class="track"><div class="fill" style="width:72%"></div></div><span class="v num">72%</span></div>
+            <div class="meter"><span class="label">峰值强度</span><div class="track"><div class="fill" style="width:58%"></div></div><span class="v num">58%</span></div>
+            <div class="meter"><span class="label">稳定性</span><div class="track"><div class="fill" style="width:81%"></div></div><span class="v num">81%</span></div>
+            <div class="meter"><span class="label">整体效率</span><div class="track"><div class="fill" style="width:68%"></div></div><span class="v num">68%</span></div>
+            <div class="note">回收占比高、峰值偏缓：适合城市路况，急刹少。</div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">版本对比</div>
+            <div class="mini-row"><span class="label">当前 2026.30.5</span><span class="value">68 kW</span></div>
+            <div class="mini-row"><span class="label">上一版 2026.26.200</span><span class="value">72 kW</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">09</span><span class="name">动能回收</span><span class="api">/regen（待建）</span></div>
+  </div>
+
+  <!-- 10 — track filter -->
+  <div class="frame" id="s10">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status" style="color:#f5f7fa"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+
+        <div class="map-full">
+          <svg class="roads" viewBox="0 0 390 844" preserveAspectRatio="none">
+            <path d="M-20 154C50 138 90 112 140 108s70-6 110-30S330 44 410 30" stroke="#26344a" stroke-width="9" fill="none"/>
+            <path d="M40-10c6 44 8 84-6 120s-14 66-8 96" stroke="#243147" stroke-width="7" fill="none"/>
+            <path d="M222-10c-2 40 8 70 28 96s30 62 22 118" stroke="#243147" stroke-width="6" fill="none"/>
+            <path d="M-10 262c60 6 96 10 132 26s86 20 130 14 70 2 130 18" stroke="#202c40" stroke-width="5" fill="none"/>
+            <path d="M110 845c-6-40 6-70 32-92s40-52 44-84" stroke="#2b3a52" stroke-width="4" fill="none"/>
+            <path d="M-10 520c70 10 120 30 170 24s90-18 150 6" stroke="#202c40" stroke-width="5" fill="none"/>
+            <path d="M-10 660c80 4 130 26 180 22s100-16 150 10" stroke="#243147" stroke-width="6" fill="none"/>
+            <path class="track-line" d="M60 300 C 90 250, 150 260, 180 230 S 250 190, 290 210" stroke="#5cc7ff"/>
+            <path class="track-line" d="M70 380 C 120 340, 160 380, 210 350 S 280 330, 310 360" stroke="#5cd98f"/>
+            <path class="track-line" d="M50 470 C 110 440, 150 480, 200 460 S 270 440, 320 470" stroke="#ad8cff"/>
+            <path class="track-line" d="M80 590 C 130 560, 170 600, 220 580 S 290 560, 330 590" stroke="#ffaa4d"/>
+            <circle cx="60" cy="300" r="4" fill="#5cc7ff"/><circle cx="290" cy="210" r="4" fill="#5cc7ff"/>
+            <circle cx="70" cy="380" r="4" fill="#5cd98f"/><circle cx="310" cy="360" r="4" fill="#5cd98f"/>
+          </svg>
+        </div>
+
+        <div style="position:absolute;left:0;right:0;top:54px;z-index:16;padding:0 16px">
+          <div class="nav head wrapped" style="margin:0">
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div><div class="nav-title" style="font-size:18px">历史轨迹</div></div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-share"/></svg></div></div>
+          </div>
+        </div>
+
+        <div class="map-pill" style="top:120px;left:16px">10月6日 – 11月4日 · 4 段</div>
+
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="row-between" style="margin-bottom:14px">
+            <div class="section-title" style="margin:0">筛选条件</div>
+            <span class="cap" style="color:var(--accent)">重置</span>
+          </div>
+
+          <div class="label-mini">快速筛选</div>
+          <div class="chips">
+            <span class="chip sel">今日</span>
+            <span class="chip neutral">最近 3 天</span>
+            <span class="chip neutral">最近一周</span>
+            <span class="chip neutral">本月</span>
+          </div>
+
+          <div class="label-mini" style="margin-top:18px">自定义时间范围</div>
+          <div class="settings-group">
+            <div class="srow"><span class="label">开始</span><span class="value num">2026-10-06 00:00</span><svg class="icon sm"><use href="#i-chevron"/></svg></div>
+            <div class="srow"><span class="label">结束</span><span class="value num">2026-11-04 23:59</span><svg class="icon sm"><use href="#i-chevron"/></svg></div>
+          </div>
+
+          <div class="row-between" style="margin:16px 2px">
+            <span class="cap">显示全部时间段</span>
+            <div class="switch off" style="transform:scale(.86)"></div>
+          </div>
+
+          <div class="primary" style="margin-top:6px">应用筛选</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">10</span><span class="name">轨迹筛选（自定义时间范围）</span><span class="api">/positions</span></div>
+  </div>
+
+</div>
+
+<!-- ============ component specimens ============ -->
+<section class="fam" id="components">
+  <h2>09 · 新增组件 New components</h2>
+  <p class="fam-sub">
+    只抽取在 ≥ 2 个新页面里重复出现、或自带状态的东西。单页用的（对比条、月历）先留在页面里，
+    与现有「第二次用到时才抽取」的规则一致。编号接 C-38 继续。
+  </p>
+
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-39</span><h3>StatusTimeline</h3><span class="spec-meta">实时 · 图例 · 停车详情</span></div>
+      <p class="spec-note">
+        24 小时状态带：每段宽度按时长加权，段与段之间留 2 pt。颜色是状态，<b>不是装饰</b>；
+        底部四格图例给出各状态累计时长。没有数据的时间段画成最淡的一档，而不是留空。
+      </p>
+      <div class="stage">
+        <div class="tl">
+          <i class="st-asleep" style="flex:390"></i><i class="st-online" style="flex:22"></i><i class="st-driving" style="flex:34"></i>
+          <i class="st-online" style="flex:5"></i><i class="st-driving" style="flex:36"></i><i class="st-charging" style="flex:40"></i>
+          <i class="st-asleep" style="flex:203"></i><i class="st-online" style="flex:6"></i><i class="st-driving" style="flex:38"></i>
+          <i class="st-asleep" style="flex:246"></i><i class="st-online" style="flex:8"></i><i class="st-driving" style="flex:40"></i>
+          <i class="st-asleep" style="flex:372"></i>
+        </div>
+        <div class="tl-axis"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+        <div class="legend-row">
+          <span><i class="st-online"></i>在线</span>
+          <span><i class="st-driving"></i>行驶</span>
+          <span><i class="st-charging"></i>充电中</span>
+          <span><i class="st-asleep"></i>休眠</span>
+          <span><i class="st-updating"></i>更新中</span>
+          <span><i class="st-unknown"></i>未知</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-40</span><h3>ProportionBar</h3><span class="spec-meta">停车 · 状态混合</span></div>
+      <p class="spec-note">
+        一条表示占比的堆叠条，配一行图例。用于「休眠 vs 在线」这类只有两种状态的场合；
+        超过四种时改用 C-39，堆叠条会看不清。
+      </p>
+      <div class="stage">
+        <div class="label-mini">休眠占比 92%</div>
+        <div class="prop"><i class="st-asleep" style="flex:92"></i><i class="st-online" style="flex:8"></i></div>
+        <div class="prop-legend"><span><i class="st-asleep"></i>休眠 2h57</span><span><i class="st-online"></i>在线 15 分</span><span style="margin-left:auto">均 16 W</span></div>
+
+        <div class="label-mini">中性（无状态色）</div>
+        <div class="prop">
+          <i style="flex:62;background:linear-gradient(90deg,rgba(92,199,255,.95),rgba(92,199,255,.40))"></i>
+          <i style="flex:38;background:rgba(255,255,255,.10)"></i>
+        </div>
+        <div class="prop-legend"><span>已用 62%</span><span style="margin-left:auto">剩余 38%</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-41</span><h3>MiniBars</h3><span class="spec-meta">实时 · 动能回收</span></div>
+      <p class="spec-note">
+        六到七根紧凑柱，无坐标轴、无网格，只在下方标一个短标签。用于「一眼看趋势」的地方；
+        需要读具体数值时用 C-26 <code>BarChart</code>。
+      </p>
+      <div class="stage">
+        <div class="mini-bars">
+          <div class="m"><i style="height:64%"></i><span>6月</span></div>
+          <div class="m"><i style="height:78%"></i><span>7月</span></div>
+          <div class="m"><i style="height:52%"></i><span>8月</span></div>
+          <div class="m"><i style="height:91%"></i><span>9月</span></div>
+          <div class="m"><i style="height:100%"></i><span>10月</span></div>
+          <div class="m on"><i style="height:23%"></i><span>11月</span></div>
+        </div>
+        <div class="row-between" style="margin-top:10px"><span class="cap-sm">近 6 个月</span><span class="cap-sm num">2,946 km · 月均 491 km</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-42</span><h3>ScoreRing</h3><span class="spec-meta">电池健康 · 达成率</span></div>
+      <p class="spec-note">
+        0–100 分环形，环内是分数与单位，右侧是评级词与一句解释。与 C-14 <code>BatteryRing</code>
+        的分工：C-14 显示百分比并随电量变色，C-42 显示评分、颜色由评级决定。
+      </p>
+      <div class="stage">
+        <div class="score">
+          <div class="ring">
+            <svg viewBox="0 0 132 132">
+              <circle cx="66" cy="66" r="54" stroke="rgba(255,255,255,.08)" stroke-width="12" fill="none"/>
+              <circle cx="66" cy="66" r="54" stroke="#5cd98f" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="326 340"/>
+            </svg>
+            <div class="ring-label"><div class="big num">96</div><div class="sub">健康度</div></div>
+          </div>
+          <div><div class="verdict ok">优秀<small>高于同期 87% 的车辆</small></div></div>
+        </div>
+        <div class="label-mini">评级阈值</div>
+        <div class="legend-row">
+          <span><i style="background:#5cd98f"></i>优秀 ≥ 90</span>
+          <span><i style="background:#5cc7ff"></i>良好 75–89</span>
+          <span><i style="background:#ffaa4d"></i>偏低 60–74</span>
+          <span><i style="background:#ff6e6e"></i>异常 &lt; 60</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-43</span><h3>ComparisonRow</h3><span class="spec-meta">能耗分析 · 单体</span></div>
+      <p class="spec-note">
+        一行 = 一个分组（版本 / 季节 / 温度带）：名称、数值与差值、一根条、以及一条贯穿所有行的均值竖线。
+        条的宽度相对最大值归一并在右侧留约一成余量，不相对均值，否则超过均值的行会溢出。
+      </p>
+      <div class="stage">
+        <div class="comp">
+          <div class="top"><span class="name">2026.30.5 最新</span><span class="v num">161 <span class="delta worse">+3.2%</span></span></div>
+          <div class="track"><div class="fill" style="width:89.3%"></div><div class="mean" style="left:86.5%"></div></div>
+        </div>
+        <div class="comp">
+          <div class="top"><span class="name">2026.26.200</span><span class="v num">149 <span class="delta better">−4.5%</span></span></div>
+          <div class="track"><div class="fill best" style="width:82.6%"></div><div class="mean" style="left:86.5%"></div></div>
+        </div>
+        <div class="comp">
+          <div class="top"><span class="name">2026.20.3</span><span class="v num">154 <span class="delta better">−1.3%</span></span></div>
+          <div class="track"><div class="fill" style="width:85.4%"></div><div class="mean" style="left:86.5%"></div></div>
+        </div>
+        <div class="comp">
+          <div class="top"><span class="name">2026.14.2</span><span class="v num">158 <span class="delta worse">+1.3%</span></span></div>
+          <div class="track"><div class="fill" style="width:87.6%"></div><div class="mean" style="left:86.5%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-44</span><h3>MonthCalendar</h3><span class="spec-meta">行程日历 · 单体</span></div>
+      <p class="spec-note">
+        七列月历，每格一个日期、最多两个标记（有行程 / 有充电）与当日里程。没有事件的日子不着色，
+        只留数字——整月涂满会让人以为每天都很忙。今天用描边而不是填充。
+      </p>
+      <div class="stage">
+        <div class="cal">
+          <div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>
+          <div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div>
+          <div class="d"><span>1</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">12</span></div>
+          <div class="d"><span>2</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">8</span></div>
+          <div class="d on"><span>3</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">18</span></div>
+          <div class="d on"><span>4</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">25</span></div>
+          <div class="d"><span>5</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>6</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>7</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d on"><span>8</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">14</span></div>
+          <div class="d on"><span>9</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">21</span></div>
+          <div class="d"><span>10</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d on"><span>11</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">32</span></div>
+          <div class="d on"><span>12</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">9</span></div>
+          <div class="d"><span>13</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>14</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d on"><span>15</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">17</span></div>
+          <div class="d on"><span>16</span><div class="marks"><i style="background:#5cc7ff"></i><i style="background:#5cd98f"></i></div><span class="km">28</span></div>
+          <div class="d on"><span>17</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">11</span></div>
+          <div class="d on today"><span>18</span><div class="marks"><i style="background:#5cc7ff"></i></div><span class="km">16</span></div>
+          <div class="d"><span>19</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>20</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>21</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>22</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>23</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>24</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>25</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>26</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>27</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>28</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>29</span><div class="marks"></div><span class="km"></span></div>
+          <div class="d"><span>30</span><div class="marks"></div><span class="km"></span></div>
+        </div>
+        <div class="prop-legend" style="margin-top:12px">
+          <span><i style="background:#5cc7ff"></i>有行程</span>
+          <span><i style="background:#5cd98f"></i>有充电</span>
+          <span style="margin-left:auto">数字为当日里程（km）</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

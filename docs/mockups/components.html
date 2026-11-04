@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Odo — 组件清单 / Component inventory</title>
+<style>
+  :root {
+    --bg: #070a12;
+    --screen-a: #0a0f1a;
+    --screen-b: #141a29;
+    --glass-body:
+      radial-gradient(150% 110% at 2% -12%, rgba(255,255,255,.10), transparent 56%),
+      linear-gradient(150deg, rgba(255,255,255,.075), rgba(255,255,255,.028) 46%, rgba(255,255,255,.05));
+    --glass-body-soft:
+      radial-gradient(150% 110% at 2% -12%, rgba(255,255,255,.075), transparent 56%),
+      linear-gradient(150deg, rgba(255,255,255,.05), rgba(255,255,255,.016) 52%, rgba(255,255,255,.034));
+    --glass-rim: linear-gradient(150deg, rgba(255,255,255,.50), rgba(255,255,255,.10) 34%, rgba(255,255,255,.03) 64%, rgba(255,255,255,.20));
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 14px 34px rgba(0,0,0,.26);
+    --glass-blur: blur(24px) saturate(175%);
+    --accent: #5cc7ff;
+    --green: #5cd98f;
+    --orange: #ffaa4d;
+    --red: #ff6e6e;
+    --purple: #ad8cff;
+    --text: #f5f7fa;
+    --muted: rgba(235, 240, 255, .55);
+    --faint: rgba(235, 240, 255, .32);
+    --screen:
+      radial-gradient(130% 42% at 50% -8%, rgba(255,255,255,.07), transparent 70%),
+      radial-gradient(118% 46% at 16% 32%, rgba(92,199,255,.18), transparent 70%),
+      radial-gradient(100% 42% at 96% 50%, rgba(173,140,255,.15), transparent 70%),
+      radial-gradient(120% 50% at 50% 112%, rgba(64,196,214,.12), transparent 72%),
+      linear-gradient(180deg, var(--screen-a), var(--screen-b));
+  }
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(1000px 600px at 15% -10%, rgba(92,199,255,.10), transparent 60%),
+      radial-gradient(800px 500px at 90% 10%, rgba(173,140,255,.07), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif;
+    padding: 56px 40px 120px;
+  }
+
+  /* ---------- page head ---------- */
+  .page-head { max-width: 1440px; margin: 0 auto 40px; }
+  .eyebrow { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: -.02em; margin: 10px 0 8px; }
+  .lede { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 860px; margin: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 22px; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; }
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .toc a {
+    font-size: 11.5px; color: var(--muted); text-decoration: none; padding: 6px 11px;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03);
+  }
+  .toc a:hover { color: var(--accent); border-color: rgba(92,199,255,.35); }
+
+  /* ---------- family + specimen ---------- */
+  .fam { max-width: 1440px; margin: 60px auto 0; }
+  .fam > h2 { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+  .fam > .fam-sub { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 0 0 26px; max-width: 820px; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(408px, 1fr)); gap: 22px; }
+
+  .spec {
+    border: 1px solid rgba(255,255,255,.07); border-radius: 22px; padding: 18px;
+    background: rgba(255,255,255,.018); min-width: 0;
+  }
+  .spec.wide { grid-column: 1 / -1; }
+  .spec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .spec-id { font-size: 11px; color: var(--accent); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .spec h3 { font-size: 15px; margin: 0; font-weight: 600; }
+  .spec-meta { margin-left: auto; font-size: 10px; color: var(--faint); white-space: nowrap; }
+  .spec-note { color: var(--muted); font-size: 11.5px; line-height: 1.65; margin: 0 0 14px; }
+  .spec-note b { color: rgba(235,240,255,.78); font-weight: 600; }
+  .stage {
+    background: var(--screen); border-radius: 14px; padding: 14px; position: relative;
+    overflow: hidden;
+  }
+  .stage.flat { background: linear-gradient(180deg, var(--screen-a), var(--screen-b)); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .row.tight { gap: 6px; }
+  .label-mini { font-size: 10px; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin: 14px 0 7px; }
+  .label-mini:first-child { margin-top: 0; }
+
+  /* ---------- primitives reused from the mockups ---------- */
+  .screen { background: var(--screen); }
+  .scr {
+    position: relative; border-radius: 14px; overflow: hidden; background: var(--screen);
+    /* size the screen gradient to a full phone height so a short window shows the same
+       top-of-screen colour a real screen would, not a compressed copy of the whole thing */
+    background-size: 100% 680px; background-repeat: no-repeat;
+    display: flex; flex-direction: column;
+  }
+  .scroller { flex: 1; overflow-y: auto; padding: 0 16px 20px; scrollbar-width: thin; }
+  .scroller::-webkit-scrollbar { width: 4px; }
+  .scroller::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border-radius: 4px; }
+
+  .nav.head {
+    position: sticky; top: 0; z-index: 15; isolation: isolate; flex: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin: 0 -16px 12px; padding: 14px 16px 12px; border-radius: 0;
+    transition: margin .22s cubic-bezier(.32,.72,0,1), padding .22s cubic-bezier(.32,.72,0,1),
+                border-radius .22s cubic-bezier(.32,.72,0,1);
+  }
+  .nav.head::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid transparent;
+    border-radius: inherit; opacity: 0;
+    background: linear-gradient(150deg, rgba(255,255,255,.13), rgba(255,255,255,.05) 46%, rgba(255,255,255,.07)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 14px 30px rgba(0,0,0,.32);
+    transition: opacity .18s ease;
+  }
+  .nav.head.is-stuck, .nav.head.wrapped { margin: 0 -4px 12px; padding: 10px 16px; border-radius: 28px; }
+  .nav.head.is-stuck::before, .nav.head.wrapped::before { opacity: 1; }
+  .nav.head.bleed { margin-left: 0; margin-right: 0; }
+  .nav.head.bleed.is-stuck, .nav.head.bleed.wrapped { margin-left: 12px; margin-right: 12px; }
+  .nav-group { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .nav-title { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+  .nav-sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+    color: rgba(255,255,255,.74); flex: none;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.06); }
+  @media (prefers-reduced-motion: reduce) {
+    .nav.head, .nav.head::before { transition: none; }
+  }
+
+  .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .icon.sm { width: 16px; height: 16px; }
+  .icon.xs { width: 14px; height: 14px; }
+  .icon.lg { width: 26px; height: 26px; }
+
+  .seg {
+    display: flex; gap: 4px; padding: 3px; border-radius: 16px; border: 1px solid transparent;
+    background: linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  }
+  .seg div { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); padding: 7px 14px; border-radius: 13px; cursor: pointer; white-space: nowrap; }
+  .seg div.on {
+    color: var(--accent);
+    background: linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.30), 0 4px 12px rgba(0,0,0,.20);
+  }
+  .seg.small div { padding: 5px 11px; font-size: 11px; }
+  .filterbar { display: flex; gap: 10px; }
+
+  .tabbar {
+    display: flex; gap: 2px; padding: 6px; height: 64px; border-radius: 26px; border: 1px solid transparent;
+    background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.04)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 18px 40px rgba(0,0,0,.42);
+  }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 20px; color: var(--faint); font-size: 9.5px; cursor: pointer; }
+  .tab.on {
+    color: var(--accent);
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.26);
+  }
+  .tab .icon { width: 22px; height: 22px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .pill.online { color: var(--green); background: rgba(92,217,143,.14); }
+  .pill.asleep { color: var(--muted); background: rgba(255,255,255,.07); }
+  .pill.offline { color: var(--faint); background: rgba(255,255,255,.05); }
+  .pill.charging { color: var(--orange); background: rgba(255,170,77,.14); }
+  .pill.driving { color: var(--green); background: rgba(92,217,143,.14); }
+  .pill.updating { color: var(--purple); background: rgba(173,140,255,.14); }
+  .pill.suspended { color: var(--purple); background: rgba(173,140,255,.10); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .card {
+    padding: 16px; border: 1px solid transparent; border-radius: 24px;
+    background: var(--glass-body) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+  }
+  .card.soft {
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .card.tint-green {
+    background: linear-gradient(150deg, rgba(92,217,143,.13), rgba(92,217,143,.04)) padding-box,
+                linear-gradient(150deg, rgba(92,217,143,.42), rgba(92,217,143,.10) 55%, rgba(255,255,255,.08)) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .card.tint-orange {
+    background: linear-gradient(150deg, rgba(255,170,77,.13), rgba(255,170,77,.04)) padding-box,
+                linear-gradient(150deg, rgba(255,170,77,.42), rgba(255,170,77,.10) 55%, rgba(255,255,255,.08)) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .filler { border-radius: 24px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.06); }
+  .row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .section-title { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+  .cap { color: var(--muted); font-size: 12px; }
+  .cap-sm { color: var(--faint); font-size: 11px; }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  .ring-wrap { display: flex; align-items: center; gap: 20px; }
+  .ring { position: relative; width: 128px; height: 128px; flex: none; }
+  .ring svg { width: 128px; height: 128px; transform: rotate(-90deg); }
+  .ring .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .ring .big { font-size: 28px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .ring .sub { font-size: 10px; color: var(--muted); }
+  .range-num { font-size: 34px; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .range-unit { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+
+  .map { position: relative; border-radius: 14px; overflow: hidden; background: radial-gradient(120% 120% at 70% 20%, #1b2740 0%, #111a2a 55%, #0d1421 100%); }
+  .map .roads { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pin { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid rgba(92,199,255,.28); box-shadow: 0 0 0 8px rgba(92,199,255,.10); transform: translate(-50%, -50%); }
+  .map-chip, .map-link, .map-pill {
+    position: absolute; display: flex; align-items: center; gap: 6px; padding: 7px 11px;
+    border-radius: 999px; font-size: 11px; border: 1px solid transparent;
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.05)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px rgba(0,0,0,.28);
+  }
+  .map-chip { left: 10px; bottom: 10px; }
+  .map-chip .icon { color: var(--accent); }
+  .map-link { right: 10px; bottom: 10px; color: var(--accent); }
+  .map-pill { left: 10px; top: 10px; padding: 6px 10px; color: var(--muted); }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    padding: 14px 16px; border: 1px solid transparent; border-radius: 22px;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .tile .icon { color: var(--accent); margin-bottom: 10px; }
+  .tile .label { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .tile .value { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .value small { font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 2px; }
+
+  .mini-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mini-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .mini-row:first-child { padding-top: 0; }
+  .mini-row .icon { color: var(--muted); }
+  .mini-row .label { flex: 1; font-size: 13px; color: var(--muted); }
+  .mini-row .value { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--green); } .warn { color: var(--orange); }
+
+  .stat-strip { display: flex; }
+  .stat-strip > div { flex: 1; }
+  .stat-strip .n { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-strip .n small { font-size: 11px; font-weight: 500; color: var(--muted); }
+  .stat-strip .l { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .day { display: flex; justify-content: space-between; align-items: baseline; margin: 16px 2px 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .day:first-child { margin-top: 0; }
+  .day span:last-child { font-weight: 500; color: var(--faint); font-variant-numeric: tabular-nums; }
+
+  .trip { display: grid; grid-template-columns: 44px 14px 1fr auto; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .trip:last-child { border-bottom: 0; }
+  .trip .times { display: flex; flex-direction: column; justify-content: space-between; padding: 1px 0; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rail { position: relative; }
+  .rail::before { content: ""; position: absolute; left: 6px; top: 7px; bottom: 7px; width: 2px; background: rgba(255,255,255,.12); border-radius: 2px; }
+  .rail .d1, .rail .d2 { position: absolute; left: 1px; width: 12px; height: 12px; border-radius: 50%; }
+  .rail .d1 { top: 0; background: var(--green); box-shadow: 0 0 0 3px rgba(92,217,143,.12); }
+  .rail .d2 { bottom: 0; background: var(--orange); box-shadow: 0 0 0 3px rgba(255,170,77,.12); }
+  .trip .places { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; min-width: 0; }
+  .trip .places div { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trip .places div:first-child { font-weight: 600; }
+  .trip .places div:last-child { color: var(--muted); }
+  .trip .right { text-align: right; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .trip .right .km { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trip .right .min { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .chart-card {
+    padding: 14px 16px 8px; border: 1px solid transparent; border-radius: 24px;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .chart-head .t { font-size: 13px; font-weight: 600; }
+  .chart-head .v { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .chart { width: 100%; display: block; }
+
+  .energy-badge {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 20px; border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(92,217,143,.16), rgba(92,217,143,.05)) padding-box,
+                linear-gradient(150deg, rgba(92,217,143,.45), rgba(92,217,143,.10) 55%, rgba(255,255,255,.08)) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .energy-badge .icon { color: var(--green); }
+  .energy-badge .n { font-size: 16px; font-weight: 700; }
+  .energy-badge .n small { font-size: 10px; font-weight: 500; color: var(--muted); }
+  .energy-badge .cap { margin-left: auto; }
+  .energy-badge.warn {
+    background: linear-gradient(150deg, rgba(255,170,77,.16), rgba(255,170,77,.05)) padding-box,
+                linear-gradient(150deg, rgba(255,170,77,.45), rgba(255,170,77,.10) 55%, rgba(255,255,255,.08)) border-box;
+  }
+  .energy-badge.warn .icon { color: var(--orange); }
+
+  .soc { display: flex; align-items: center; gap: 8px; }
+  .soc .track { position: relative; flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); }
+  .soc .fill { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, var(--green), #8ce8ae); }
+  .soc .p { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .charge-row { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .charge-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .charge-top { display: flex; align-items: flex-start; gap: 10px; }
+  .charge-icon { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: rgba(92,199,255,.10); color: var(--accent); flex: none; }
+  .charge-main { flex: 1; min-width: 0; }
+  .charge-main .where { font-size: 13px; font-weight: 600; }
+  .charge-main .when { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .charge-right { text-align: right; }
+  .charge-right .kwh { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .charge-right .dur { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .bars-chart { display: flex; align-items: flex-end; gap: 5px; height: 110px; padding-top: 8px; }
+  .bars-chart i { flex: 1; border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, rgba(92,199,255,.95), rgba(92,199,255,.28)); min-height: 2px; }
+  .bars-chart i.zero { background: rgba(255,255,255,.10); height: 2px !important; }
+  .axis { display: flex; justify-content: space-between; color: var(--faint); font-size: 10px; margin-top: 8px; }
+
+  .entry {
+    display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 20px; border: 1px solid transparent;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .entry .thumb { width: 52px; height: 52px; border-radius: 13px; background: radial-gradient(120% 120% at 70% 20%, #1b2740, #0d1421); position: relative; overflow: hidden; flex: none; }
+  .entry .thumb svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .entry .t { font-size: 13px; font-weight: 600; }
+  .entry .s { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .settings-group {
+    border: 1px solid transparent; border-radius: 22px; overflow: hidden;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .group-label { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 8px 4px; }
+  .srow { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .srow:last-child { border-bottom: 0; }
+  .srow .label { flex: 1; font-size: 13px; }
+  .srow .value { font-size: 12px; color: var(--muted); max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .srow .icon { color: var(--faint); }
+  .switch, .toggle { width: 45px; height: 27px; border-radius: 999px; position: relative; flex: none; cursor: pointer; transition: background .18s ease; }
+  .switch { background: linear-gradient(180deg, #7ad4ff, #3fb0ec); box-shadow: inset 0 1px 0 rgba(255,255,255,.50); }
+  .toggle { background: rgba(92,199,255,.30); }
+  .switch::after, .toggle::after { content: ""; position: absolute; right: 3px; top: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; transition: left .18s ease, right .18s ease; }
+  .toggle.off { background: rgba(255,255,255,.14); }
+  .toggle.off::after { right: auto; left: 3px; opacity: .8; }
+
+  .destructive {
+    text-align: center; color: #ff8f8f; font-size: 13px; font-weight: 600; padding: 14px; border-radius: 18px; border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(255,110,110,.16), rgba(255,110,110,.05)) padding-box,
+                linear-gradient(150deg, rgba(255,110,110,.45), rgba(255,110,110,.10) 60%) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .field {
+    text-align: left; padding: 11px 13px; border-radius: 18px; border: 1px solid transparent;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .field + .field { margin-top: 10px; }
+  .field .fl { font-size: 10px; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+  .field .fv { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .field .fv.masked { letter-spacing: .12em; color: var(--muted); }
+  .field.focused { border-color: transparent;
+    background: var(--glass-body) padding-box, linear-gradient(150deg, rgba(92,199,255,.65), rgba(92,199,255,.18) 60%, rgba(255,255,255,.10)) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.20), 0 0 0 3px rgba(92,199,255,.14); }
+  .field.error { background: var(--glass-body-soft) padding-box,
+    linear-gradient(150deg, rgba(255,110,110,.55), rgba(255,110,110,.14) 60%, rgba(255,255,255,.08)) border-box; }
+  .field .hintline { font-size: 10.5px; color: var(--red); margin-top: 5px; }
+
+  .primary {
+    height: 50px; border-radius: 18px; display: grid; place-items: center; color: #05131d;
+    font-size: 15px; font-weight: 700; border: 1px solid transparent;
+    background: linear-gradient(180deg, #8ad9ff, #46baf5) padding-box,
+                linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.15)) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 12px 26px rgba(92,199,255,.30);
+  }
+  .primary.disabled {
+    color: rgba(235,240,255,.34);
+    background-image: none;
+    background-color: rgba(255,255,255,.055);
+    border-color: rgba(255,255,255,.12);
+    box-shadow: none;
+  }
+  .primary.loading { color: rgba(5,19,29,.75); }
+  .primary .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(5,19,29,.30); border-top-color: rgba(5,19,29,.85); animation: spin .9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hero-glyph {
+    width: 78px; height: 78px; border-radius: 28px; display: grid; place-items: center; color: var(--accent);
+    border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(92,199,255,.22), rgba(92,199,255,.06)) padding-box,
+                linear-gradient(150deg, rgba(92,199,255,.55), rgba(255,255,255,.10) 60%) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 16px 32px rgba(0,0,0,.28);
+  }
+
+  .banner {
+    display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 16px;
+    color: var(--orange); font-size: 11px; border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(255,170,77,.16), rgba(255,170,77,.05)) padding-box,
+                linear-gradient(150deg, rgba(255,170,77,.40), rgba(255,170,77,.08) 60%, rgba(255,255,255,.06)) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  }
+  .banner .icon { width: 15px; height: 15px; }
+  .banner .act { margin-left: auto; font-weight: 700; white-space: nowrap; }
+
+  .empty { text-align: center; padding: 28px 16px; }
+  .empty .icon { color: var(--accent); width: 36px; height: 36px; }
+  .empty h4 { font-size: 15px; font-weight: 600; margin: 12px 0 6px; }
+  .empty p { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+  .empty .act {
+    display: inline-block; padding: 9px 16px; border-radius: 14px; font-size: 12px; font-weight: 600; color: var(--accent);
+    border: 1px solid transparent;
+    background: linear-gradient(rgba(92,199,255,.10), rgba(92,199,255,.10)) padding-box,
+                linear-gradient(rgba(92,199,255,.28), rgba(92,199,255,.28)) border-box;
+  }
+
+  .sk { border-radius: 24px; background: rgba(255,255,255,.055); position: relative; overflow: hidden; }
+  .sk::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.09) 48%, transparent 76%);
+    transform: translateX(-100%); animation: shimmer 1.2s ease-in-out infinite;
+  }
+  @keyframes shimmer { to { transform: translateX(100%); } }
+  .sk .l { height: 10px; border-radius: 6px; background: rgba(255,255,255,.10); margin: 10px 16px; }
+
+  .footer-state { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 0; font-size: 11.5px; color: var(--muted); }
+  .footer-state .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.18); border-top-color: rgba(255,255,255,.62); animation: spin .9s linear infinite; }
+  .footer-state.end { color: var(--faint); }
+  .footer-state.err { color: var(--orange); }
+  .footer-state.err b { color: var(--orange); font-weight: 700; }
+
+  .fresh { font-size: 11px; color: var(--muted); }
+  .fresh.warn { color: var(--orange); }
+
+  .sheet-scrim {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 62%;
+    background: linear-gradient(180deg, rgba(10,15,26,0) 0%, rgba(11,17,32,.62) 34%, rgba(11,17,32,.90) 68%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
+    padding: 26px 12px 12px; display: flex; align-items: flex-end;
+  }
+  .sheet-scrim > * { width: 100%; }
+
+  .ph { position: relative; width: 358px; max-width: 100%; height: 680px; border-radius: 34px; overflow: hidden; background: var(--screen); display: flex; flex-direction: column; }
+  .ph .scroller { padding: 0 16px 90px; }
+  .ph .tabbar { position: absolute; left: 12px; right: 12px; bottom: 10px; }
+  .compose { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+
+  @media (max-width: 1000px) { body { padding: 32px 18px 80px; } .gallery { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></symbol>
+    <symbol id="ic-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="ic-chevron" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol id="ic-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></symbol>
+    <symbol id="ic-share" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></symbol>
+    <symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></symbol>
+    <symbol id="ic-car" viewBox="0 0 24 24"><path d="M4 16v-3l2-5h12l2 5v3"/><path d="M3 16h18v3H3z"/><circle cx="7.5" cy="19.5" r="1.4"/><circle cx="16.5" cy="19.5" r="1.4"/></symbol>
+    <symbol id="ic-gauge" viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 14l4-4"/></symbol>
+    <symbol id="ic-road" viewBox="0 0 24 24"><path d="M7 3 4 21M17 3l3 18M12 4v3M12 11v3M12 18v2"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="ic-window" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></symbol>
+    <symbol id="ic-door" viewBox="0 0 24 24"><path d="M5 21V4a1 1 0 0 1 1-1h9l4 3v15z"/><circle cx="15" cy="13" r="1"/></symbol>
+    <symbol id="ic-thermo" viewBox="0 0 24 24"><path d="M14 14V5a2 2 0 0 0-4 0v9a4 4 0 1 0 4 0z"/><path d="M12 17v-5"/></symbol>
+    <symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="ic-charge" viewBox="0 0 24 24"><path d="M9 3h5v6H9z"/><path d="M9 9h5l3 4v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6z"/><path d="M12 12v5"/></symbol>
+    <symbol id="ic-warn" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+    <symbol id="ic-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+    <symbol id="ic-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="ic-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L5.1 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 2.6h5l.4-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5c.06-.33.1-.66.1-1z"/></symbol>
+    <symbol id="ic-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="ic-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></symbol>
+    <symbol id="ic-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/><path d="M9 20h6M12 14v6"/></symbol>
+  </defs>
+</svg>
+
+<div class="page-head">
+  <div class="eyebrow">Odo · UI components</div>
+  <h1>组件清单 · Component inventory</h1>
+  <p class="lede">
+    38 个可复用组件的可视版，编号与 <b>UI-COMPONENTS.md / UI-COMPONENTS.zh-CN.md</b> 一一对应。
+    每个卡片是一种组件；卡片里并排的是它的变体与状态。颜色只表示状态，不表示风格偏好。
+  </p>
+  <div class="legend">
+    <span><i class="swatch" style="background:var(--accent)"></i>强调 · 选中 / 主要数值</span>
+    <span><i class="swatch" style="background:var(--green)"></i>正常 · 在线 / 已充 / 低能耗</span>
+    <span><i class="swatch" style="background:var(--orange)"></i>警告 · 充电中 / 过期</span>
+    <span><i class="swatch" style="background:var(--red)"></i>错误 · 低电量 / 破坏性</span>
+    <span><i class="swatch" style="background:var(--purple)"></i>暂停 / 更新</span>
+  </div>
+  <nav class="toc">
+    <a href="#fam-chrome">01 框架 C-01–C-08</a>
+    <a href="#fam-surface">02 表面 C-09–C-13</a>
+    <a href="#fam-data">03 数据 C-14–C-21</a>
+    <a href="#fam-rows">04 行 C-22–C-24</a>
+    <a href="#fam-chart">05 图表 C-25–C-26</a>
+    <a href="#fam-map">06 地图 C-27–C-30</a>
+    <a href="#fam-feedback">07 反馈 C-31–C-33</a>
+    <a href="#fam-forms">08 表单 C-34–C-38</a>
+    <a href="#compose">09 组装示例</a>
+  </nav>
+</div>
+
+<!-- ============ 01 CHROME ============ -->
+<section class="fam" id="fam-chrome">
+  <h2>01 · 框架 Chrome</h2>
+  <p class="fam-sub">每个页面都嵌在它里面。决定「这些页面是不是同一个 App」的就是这四个：背景、顶部栏、筛选行、标签栏。</p>
+  <div class="gallery">
+
+    <div class="spec wide">
+      <div class="spec-head"><span class="spec-id">C-01</span><h3>ScreenBackground</h3><span class="spec-meta">9 个页面</span></div>
+      <p class="spec-note">深色渐变加四层低饱和色场，供玻璃取色。顶部 120 pt 保持中性——状态栏后面压一块高饱和色，玻璃就会读成一条硬边。</p>
+      <div class="stage" style="height:220px;padding:0"></div>
+    </div>
+
+    <div class="spec wide">
+      <div class="spec-head"><span class="spec-id">C-02</span><h3>HeaderBar</h3><span class="spec-meta">8 个页面 · 唯一带动画的组件</span></div>
+      <p class="spec-note">
+        两个状态，一条栏。静止时通栏、无边框、无表面；页面移动约 <b>8 pt</b> 后收成玻璃胶囊（内缩 12 pt、圆角 28、blur 30 / saturate 180%）。
+        过渡 <b>220 ms cubic-bezier(.32,.72,0,1)</b>，玻璃在 <b>180 ms</b> 内淡入。栏内没有任何东西移动。<b>滚动下面这个窗口试试。</b>
+      </p>
+      <div class="row" style="align-items:stretch;gap:22px">
+        <div style="flex:1;min-width:320px">
+          <div class="label-mini">静止 → 包裹（可滚动）</div>
+          <div class="scr" style="height:280px">
+            <div class="scroller">
+              <div class="nav head">
+                <div class="nav-group"><div class="nav-title">实时</div></div>
+                <div class="nav-group">
+                  <div class="nav-btn"><svg class="icon"><use href="#ic-refresh"/></svg></div>
+                </div>
+              </div>
+              <div class="stack">
+                <div class="filler" style="padding:16px"><div class="cap">最后更新 12 秒前</div></div>
+                <div class="filler" style="height:96px"></div>
+                <div class="filler" style="height:96px"></div>
+                <div class="filler" style="height:96px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:320px">
+          <div class="label-mini">强制包裹（历史轨迹 · 压在地图上）</div>
+          <div class="scr" style="height:280px">
+            <div class="map" style="position:absolute;inset:0;border-radius:0">
+              <svg class="roads" viewBox="0 0 320 280" preserveAspectRatio="none">
+                <path d="M-10 90 L340 60" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/>
+                <path d="M-10 210 L340 240" stroke="rgba(255,255,255,.05)" stroke-width="14" fill="none"/>
+                <path d="M90 -10 L60 300" stroke="rgba(255,255,255,.06)" stroke-width="8" fill="none"/>
+                <path d="M230 -10 L265 300" stroke="rgba(255,255,255,.05)" stroke-width="6" fill="none"/>
+              </svg>
+            </div>
+            <div class="scroller" style="position:relative;z-index:2">
+              <div class="nav head wrapped">
+                <div class="nav-group">
+                  <div class="nav-btn"><svg class="icon"><use href="#ic-back"/></svg></div>
+                  <div class="nav-title" style="font-size:18px">历史轨迹</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-03</span><h3>HeaderAction</h3><span class="spec-meta">5 个页面</span></div>
+      <p class="spec-note">裸图标：白 74%、36 pt、无圆形底、无边框、无阴影。玻璃胶囊里再套一个玻璃圆形，会被读成第二种材质。</p>
+      <div class="stage">
+        <div class="row" style="gap:14px">
+          <div class="nav-btn"><svg class="icon"><use href="#ic-refresh"/></svg></div>
+          <div class="nav-btn"><svg class="icon"><use href="#ic-map"/></svg></div>
+          <div class="nav-btn"><svg class="icon"><use href="#ic-share"/></svg></div>
+          <div class="nav-btn" style="opacity:.35"><svg class="icon"><use href="#ic-search"/></svg></div>
+        </div>
+        <div class="label-mini" style="margin-bottom:0">可用 · 可用 · 可用 · 禁用</div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-04</span><h3>FilterRow</h3><span class="spec-meta">4 个页面</span></div>
+      <p class="spec-note">顶部栏下方的一行内容，随页面滚走。<b>永不放进顶部栏</b>——那会让头部变成两层横带。</p>
+      <div class="stage">
+        <div class="nav head" style="margin:0 0 12px;padding:0 0 12px">
+          <div class="nav-group"><div class="nav-title">行程</div></div>
+        </div>
+        <div class="filterbar">
+          <div class="seg" data-seg><div>7 天</div><div class="on">30 天</div><div>90 天</div></div>
+        </div>
+        <div class="cap" style="margin-top:14px">↓ 下面才是内容，筛选行跟着一起滚走</div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-05</span><h3>SegmentedControl</h3><span class="spec-meta">4 个页面 · 5 处</span></div>
+      <p class="spec-note">玻璃轨道 + 玻璃滑块。轨道 16、滑块 13、内边距 3。<b>点一下切换</b>，状态由页面持有。</p>
+      <div class="stage stack">
+        <div class="label-mini">常规 · 12 pt</div>
+        <div class="seg" data-seg><div>7 天</div><div class="on">30 天</div><div>90 天</div></div>
+        <div class="label-mini">小号 · 11 pt（统计页的日 / 月）</div>
+        <div class="seg small" data-seg style="max-width:180px"><div class="on">日</div><div>月</div></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-06</span><h3>TabBar</h3><span class="spec-meta">5 个页面</span></div>
+      <p class="spec-note">悬浮玻璃胶囊，左右内缩 12 pt、底部 10 pt、高 64 pt。选中项是玻璃药丸加强调色文字，只有五项。</p>
+      <div class="stage" style="padding:14px 12px 12px">
+        <div class="tabbar">
+          <div class="tab on"><svg class="icon"><use href="#ic-gauge"/></svg>实时</div>
+          <div class="tab"><svg class="icon"><use href="#ic-road"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#ic-bolt"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#ic-chart"/></svg>统计</div>
+          <div class="tab"><svg class="icon"><use href="#ic-settings"/></svg>设置</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-07</span><h3>StickyDayHeader</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">「M月d日 周x · 当日里程」，吸在包裹后的顶部栏下方，从不超过它。日期是弱化的，数字用等宽。</p>
+      <div class="stage">
+        <div class="day"><span>11月1日 周六</span><span>4.1 km</span></div>
+        <div class="day"><span>10月31日 周五</span><span>12.8 km</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-08</span><h3>MapBottomSheet</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">压在全幅地图上的渐变遮罩加玻璃卡片。地图在下面，摘要浮在上面，底部不留空带。</p>
+      <div class="stage" style="height:240px;padding:0">
+        <div class="map" style="position:absolute;inset:0;border-radius:0">
+          <svg class="roads" viewBox="0 0 400 240" preserveAspectRatio="none">
+            <path d="M-10 70 L410 40" stroke="rgba(255,255,255,.07)" stroke-width="9" fill="none"/>
+            <path d="M-10 190 L410 215" stroke="rgba(255,255,255,.05)" stroke-width="13" fill="none"/>
+            <path d="M120 -10 L90 260" stroke="rgba(255,255,255,.06)" stroke-width="7" fill="none"/>
+            <path d="M280 -10 L320 260" stroke="rgba(255,255,255,.05)" stroke-width="6" fill="none"/>
+          </svg>
+        </div>
+        <div class="sheet-scrim">
+          <div class="card">
+            <div class="row-between"><div class="cap">118 km 轨迹 · 1,000 个采样点</div><div class="cap-sm">10月3日–11月2日</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 02 SURFACES ============ -->
+<section class="fam" id="fam-surface">
+  <h2>02 · 表面 Surfaces</h2>
+  <p class="fam-sub">玻璃只有两种厚度。卡片带外阴影；卡片内部的东西只取软主体与内高光。叠两层阴影，玻璃就会读成塑料。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-09</span><h3>GlassCard</h3><span class="spec-meta">8 个页面</span></div>
+      <p class="spec-note">主体渐变（150° 白 .075 → .028 → .05）+ 反光描边 + 顶部内高光，圆角 24、内边距 16。<b>着色从主体与描边进入，不是纯色平涂。</b></p>
+      <div class="stage stack">
+        <div class="card">
+          <div class="row-between"><div class="section-title" style="margin:0">今天已行驶</div><div class="cap num">118.5 km</div></div>
+          <div class="cap" style="margin-top:8px">11月1日 · 12 次行程 · 6 小时 42 分</div>
+        </div>
+        <div class="card tint-green">
+          <div class="row-between"><div class="cap">能耗</div><div class="num" style="color:var(--green);font-weight:700">16.3 <small class="cap">kWh/100km</small></div></div>
+        </div>
+        <div class="card tint-orange">
+          <div class="row-between"><div class="cap">警告着色</div><div class="num" style="color:var(--orange);font-weight:700">橙色 = 状态</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-10</span><h3>ChartCard</h3><span class="spec-meta">3 个页面</span></div>
+      <p class="spec-note">更软的主体（白 .05 → .016 → .034），内边距 14 / 16 / 8，头部一行标题 + 摘要值（13 / 11 pt）。只有内高光，没有外阴影。</p>
+      <div class="stage">
+        <div class="chart-card">
+          <div class="chart-head"><span class="t">速度</span><span class="v">最高 66 km/h</span></div>
+          <svg class="chart" viewBox="0 0 300 90" preserveAspectRatio="none" height="90">
+            <path d="M0 70 L30 62 L60 40 L90 30 L120 46 L150 34 L180 52 L210 68 L240 58 L270 72 L300 66 L300 90 L0 90 Z" fill="rgba(92,199,255,.16)"/>
+            <path d="M0 70 L30 62 L60 40 L90 30 L120 46 L150 34 L180 52 L210 68 L240 58 L270 72 L300 66" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-11</span><h3>SettingsGroup</h3><span class="spec-meta">1 个页面 · 4 组</span></div>
+      <p class="spec-note">裁切内部行、行间画 6% 白分隔线、最后一行的分隔线去掉。组标签 11 pt 大写、字距 .08em。</p>
+      <div class="stage">
+        <div class="group-label">地图</div>
+        <div class="settings-group">
+          <div class="srow">
+            <svg class="icon sm"><use href="#ic-map"/></svg>
+            <div class="label">中国坐标偏移校正</div>
+            <div class="toggle" data-toggle></div>
+          </div>
+          <div class="srow">
+            <svg class="icon sm"><use href="#ic-target"/></svg>
+            <div class="label">WGS-84 → GCJ-02</div>
+            <div class="value">海外自动关闭</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-12</span><h3>SettingsRow</h3><span class="spec-meta">1 个页面 · N 行</span></div>
+      <p class="spec-note">标签 13 pt 撑满、数值 12 pt 弱化并单行省略（最大 190 pt）、尾部控件或箭头。四种变体如图所示。</p>
+      <div class="stage">
+        <div class="settings-group">
+          <div class="srow"><div class="label">服务器</div><div class="value">https://api.example.com</div><svg class="icon sm"><use href="#ic-chevron"/></svg></div>
+          <div class="srow"><div class="label">API Token</div><div class="value">••••••••</div><svg class="icon sm"><use href="#ic-chevron"/></svg></div>
+          <div class="srow"><div class="label">车辆</div><div class="value">Model 3 LR AWD</div><svg class="icon sm"><use href="#ic-chevron"/></svg></div>
+          <div class="srow"><div class="label">推送</div><div class="switch" data-toggle></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-13</span><h3>MapEntryCard</h3><span class="spec-meta">1 个页面 · 暂不抽取</span></div>
+      <p class="spec-note">缩略图 52 pt、标题 13 pt、副标题 11 pt、箭头。目前只有统计页用它——第二个页面需要之前，留在页面里。</p>
+      <div class="stage">
+        <div class="entry">
+          <div class="thumb">
+            <svg viewBox="0 0 52 52">
+              <path d="M-4 34 L56 22" stroke="rgba(255,255,255,.10)" stroke-width="6" fill="none"/>
+              <path d="M18 -4 L14 56" stroke="rgba(255,255,255,.08)" stroke-width="5" fill="none"/>
+              <path d="M8 40 C16 30, 24 34, 32 22 S44 16, 48 12" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="t">历史轨迹地图</div>
+            <div class="s">近 30 天 · 1,000 个采样点</div>
+          </div>
+          <svg class="icon sm" style="color:var(--faint)"><use href="#ic-chevron"/></svg>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 03 DATA ============ -->
+<section class="fam" id="fam-data">
+  <h2>03 · 数据展示 Data display</h2>
+  <p class="fam-sub">数字与状态的部件。所有会变的数字都用等宽字位，避免每秒轮询时数字左右跳动。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-14</span><h3>BatteryRing</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">128 pt 圆环、12 pt 线宽，按电量取色：≤20 红、≤40 橙、>40 绿。充电时才出现闪电。变化动画 300 ms。</p>
+      <div class="stage">
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg viewBox="0 0 128 128">
+              <circle cx="64" cy="64" r="58" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12"/>
+              <circle cx="64" cy="64" r="58" fill="none" stroke="var(--green)" stroke-width="12" stroke-linecap="round" stroke-dasharray="270 365"/>
+            </svg>
+            <div class="ring-label"><div class="big">74%</div><div class="sub">电量</div></div>
+          </div>
+          <div>
+            <div class="cap">续航</div>
+            <div><span class="range-num">382</span><span class="range-unit">km</span></div>
+            <div class="cap-sm" style="margin-top:6px">估算 419 km · 额定 382 km</div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:22px;gap:18px">
+          <div class="ring" style="width:64px;height:64px">
+            <svg viewBox="0 0 64 64" style="width:64px;height:64px">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>
+              <circle cx="32" cy="32" r="27" fill="none" stroke="var(--red)" stroke-width="7" stroke-linecap="round" stroke-dasharray="34 170"/>
+            </svg>
+            <div class="ring-label"><div class="big" style="font-size:14px">18%</div></div>
+          </div>
+          <div class="ring" style="width:64px;height:64px">
+            <svg viewBox="0 0 64 64" style="width:64px;height:64px">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>
+              <circle cx="32" cy="32" r="27" fill="none" stroke="var(--orange)" stroke-width="7" stroke-linecap="round" stroke-dasharray="70 170"/>
+            </svg>
+            <div class="ring-label"><div class="big" style="font-size:14px">34%</div></div>
+          </div>
+          <div class="ring" style="width:64px;height:64px">
+            <svg viewBox="0 0 64 64" style="width:64px;height:64px">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>
+              <circle cx="32" cy="32" r="27" fill="none" stroke="var(--green)" stroke-width="7" stroke-linecap="round" stroke-dasharray="110 170"/>
+            </svg>
+            <div class="ring-label"><svg class="icon" style="width:14px;height:14px;color:var(--orange)"><use href="#ic-bolt"/></svg><div class="sub" style="font-size:9px">充电中</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-15</span><h3>StatTile</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">图标 + 说明 + 数值，装在软玻璃磁贴里。图标可选；单位作为 <code>small</code> 后缀，字号不跳。</p>
+      <div class="stage">
+        <div class="tiles">
+          <div class="tile"><svg class="icon"><use href="#ic-gauge"/></svg><div class="label">速度</div><div class="value">0 <small>km/h</small></div></div>
+          <div class="tile"><svg class="icon"><use href="#ic-bolt"/></svg><div class="label">功率</div><div class="value">0.0 <small>kW</small></div></div>
+          <div class="tile"><svg class="icon"><use href="#ic-road"/></svg><div class="label">里程</div><div class="value">48,213 <small>km</small></div></div>
+          <div class="tile"><svg class="icon"><use href="#ic-car"/></svg><div class="label">挡位</div><div class="value">P</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-16</span><h3>StatStrip</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">三列等宽的「数值 + 标签」，自己不画玻璃，永远装在卡片里。数值 20 pt，单位 11 pt。</p>
+      <div class="stage">
+        <div class="card soft">
+          <div class="stat-strip">
+            <div><div class="n">118.5 <small>km</small></div><div class="l">总里程</div></div>
+            <div><div class="n">12 <small>次</small></div><div class="l">行程次数</div></div>
+            <div><div class="n">6<small>小时</small>42<small>分</small></div><div class="l">行驶时长</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-17</span><h3>InlineRow</h3><span class="spec-meta">3 个页面</span></div>
+      <p class="spec-note"><b>一个组件，不是两个。</b>旧的 MiniRow 与 DetailRow 只差一个可选图标；图标为 nil 时就是纯标签 + 数值。状态色同时作用于图标与数值。</p>
+      <div class="stage">
+        <div class="card soft">
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-lock"/></svg><div class="label">车锁</div><div class="value ok">已锁</div></div>
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-door"/></svg><div class="label">车门</div><div class="value warn">已开</div></div>
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-thermo"/></svg><div class="label">车外温度</div><div class="value">17.5 °C</div></div>
+          <div class="mini-row"><div class="label">额定续航</div><div class="value">382 km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-18</span><h3>StateBadge</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">胶囊 + 6 pt 圆点，颜色由状态决定。<b>文案应由外部传入</b>（NFR-9），现在写死在视图里。</p>
+      <div class="stage">
+        <div class="row tight">
+          <span class="pill online"><i class="dot"></i>在线</span>
+          <span class="pill asleep"><i class="dot"></i>休眠</span>
+          <span class="pill offline"><i class="dot"></i>离线</span>
+          <span class="pill charging"><i class="dot"></i>充电中</span>
+          <span class="pill driving"><i class="dot"></i>行驶中</span>
+          <span class="pill updating"><i class="dot"></i>更新中</span>
+          <span class="pill suspended"><i class="dot"></i>已暂停</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-19</span><h3>EnergyBadge</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">能耗徽章：<b>16.3</b> 绿色（&lt; 18）、<b>21.4</b> 橙色（≥ 18）。里程 &lt; 0.5 km 时整个隐藏，不显示 0。</p>
+      <div class="stage stack">
+        <div class="energy-badge">
+          <svg class="icon"><use href="#ic-bolt"/></svg>
+          <div class="n">16.3 <small>kWh/100km</small></div>
+          <div class="cap">能耗</div>
+        </div>
+        <div class="energy-badge warn">
+          <svg class="icon"><use href="#ic-bolt"/></svg>
+          <div class="n">21.4 <small>kWh/100km</small></div>
+          <div class="cap">能耗</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-20</span><h3>SoCBar</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">6 pt 轨道、渐变填充、两端百分比。充电行用「起 → 止」，实时页充电卡用单值加上限。</p>
+      <div class="stage stack">
+        <div class="soc"><div class="p">35%</div><div class="track"><div class="fill" style="left:35%;width:46%"></div></div><div class="p">81%</div></div>
+        <div class="soc"><div class="p">62%</div><div class="track"><div class="fill" style="left:0;width:62%"></div></div><div class="p">80% 上限</div></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-21</span><h3>FreshnessLine</h3><span class="spec-meta">7 个页面</span></div>
+      <p class="spec-note"><b>必须带绝对时间</b>，不能只写「刚刚」。缓存页面与「用户以为这是实时」之间，只隔着这一行（FR-8.1 / FR-8.2）。</p>
+      <div class="stage stack">
+        <div class="fresh">最后更新 12 秒前</div>
+        <div class="fresh">车辆休眠 · 数据停在 11月1日 21:01</div>
+        <div class="fresh warn">数据已过期 · 缓存于 11月2日 08:14</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 04 ROWS ============ -->
+<section class="fam" id="fam-rows">
+  <h2>04 · 行 Rows</h2>
+  <p class="fam-sub">列表的三种行，加一个页脚。行本身不滚动、不取数，状态由页面传入。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-22</span><h3>TripRow</h3><span class="spec-meta">1 个页面 · N 行</span></div>
+      <p class="spec-note">时间列 · 轨道 · 地点 · 数值。轨道是 6% 白的 2 pt 竖线，两端各一个 12 pt 圆点（绿起点、橙终点，各带 3 pt 同色光晕）——<b>它编码顺序，所以灰度下依然成立。</b></p>
+      <div class="stage">
+        <div class="day"><span>11月1日 周六</span><span>4.1 km</span></div>
+        <div class="trip">
+          <div class="times"><span>06:02</span><span>06:13</span></div>
+          <div class="rail"><i class="d1"></i><i class="d2"></i></div>
+          <div class="places"><div>祥符 · 拱墅区</div><div>和美弄</div></div>
+          <div class="right"><div class="km">4.0 km</div><div class="min">11 分钟 · 4.4 kWh</div></div>
+        </div>
+        <div class="trip">
+          <div class="times"><span>08:40</span><span>09:16</span></div>
+          <div class="rail"><i class="d1"></i><i class="d2"></i></div>
+          <div class="places"><div>和美弄</div><div>滨江 · 江南大道</div></div>
+          <div class="right"><div class="km">18.6 km</div><div class="min">36 分钟 · 15.1 kWh</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-23</span><h3>ChargeRow</h3><span class="spec-meta">1 个页面 · N 行</span></div>
+      <p class="spec-note">图标块 34 pt、站点与时间、kWh 与时长、下面一条 SoC 条。<b>没有费用时写「费用未记录」，绝不写 ¥0.00</b>（FR-5.2）。</p>
+      <div class="stage">
+        <div class="charge-row">
+          <div class="charge-top">
+            <div class="charge-icon"><svg class="icon sm"><use href="#ic-bolt"/></svg></div>
+            <div class="charge-main"><div class="where">石祥路充电站</div><div class="when">11月1日 13:30 · 29 分钟 · 车外 25°C</div></div>
+            <div class="charge-right"><div class="kwh">33.9 kWh</div><div class="dur">¥ 45.60</div></div>
+          </div>
+          <div class="soc" style="margin-top:9px"><div class="p">35%</div><div class="track"><div class="fill" style="left:35%;width:46%"></div></div><div class="p">81%</div></div>
+        </div>
+        <div class="charge-row">
+          <div class="charge-top">
+            <div class="charge-icon"><svg class="icon sm"><use href="#ic-bolt"/></svg></div>
+            <div class="charge-main"><div class="where">国家电网 · 文三路</div><div class="when">10月31日 20:12 · 41 分钟 · 车外 18°C</div></div>
+            <div class="charge-right"><div class="kwh">41.2 kWh</div><div class="dur">费用未记录</div></div>
+          </div>
+          <div class="soc" style="margin-top:9px"><div class="p">22%</div><div class="track"><div class="fill" style="left:22%;width:64%"></div></div><div class="p">86%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-24</span><h3>ListFooter</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">分页列表的三种结尾。<b>绝不同时出现转圈和「没有更多」</b>；失败态必须带重试——一行什么都不说的空页脚才是要避免的失败形态。</p>
+      <div class="stage stack">
+        <div class="footer-state"><span class="spin"></span>正在加载…</div>
+        <div class="footer-state end">没有更多行程</div>
+        <div class="footer-state err">加载失败 <b>重试</b></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 05 CHARTS ============ -->
+<section class="fam" id="fam-chart">
+  <h2>05 · 图表 Charts</h2>
+  <p class="fam-sub">同一页面的多张图共享 x 轴，纵向对照才对得上。图表不随 3 秒轮询重播动画——只在时间范围变化时。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-25</span><h3>LineChart</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">面积（32% → 2%）+ 2 pt 折线，4 个 x 标签，6% 白网格。<b>头部摘要按指标取最大 / 最小</b>，不是永远取最后一个值。</p>
+      <div class="stage stack">
+        <div class="chart-card">
+          <div class="chart-head"><span class="t">速度</span><span class="v">最高 66 km/h</span></div>
+          <svg class="chart" viewBox="0 0 300 90" preserveAspectRatio="none" height="90">
+            <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+              <path d="M0 22H300M0 45H300M0 68H300"/>
+            </g>
+            <path d="M0 70 L30 62 L60 40 L90 30 L120 46 L150 34 L180 52 L210 68 L240 58 L270 72 L300 66 L300 90 L0 90 Z" fill="rgba(92,199,255,.16)"/>
+            <path d="M0 70 L30 62 L60 40 L90 30 L120 46 L150 34 L180 52 L210 68 L240 58 L270 72 L300 66" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <div class="axis"><span>13:30</span><span>13:37</span><span>13:44</span><span>13:51</span></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head"><span class="t">功率</span><span class="v">最低 −43 kW</span></div>
+          <svg class="chart" viewBox="0 0 300 90" preserveAspectRatio="none" height="90">
+            <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+              <path d="M0 22H300M0 45H300M0 68H300"/>
+            </g>
+            <path d="M0 20 L40 24 L80 46 L120 62 L160 70 L200 74 L240 76 L300 78 L300 90 L0 90 Z" fill="rgba(255,170,77,.16)"/>
+            <path d="M0 20 L40 24 L80 46 L120 62 L160 70 L200 74 L240 76 L300 78" fill="none" stroke="var(--orange)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <div class="axis"><span>21:01</span><span>21:14</span><span>21:27</span><span>21:40</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-26</span><h3>BarChart</h3><span class="spec-meta">1 个页面 · 3 张</span></div>
+      <p class="spec-note">圆顶柱、断档补零（零值画 2 pt 的灰条而不是消失），x 轴共享。柱子不可点击（FR-6.4）。</p>
+      <div class="stage">
+        <div class="chart-card">
+          <div class="chart-head"><span class="t">每日里程</span><span class="v">近 30 天</span></div>
+          <div class="bars-chart">
+            <i style="height:22%"></i><i style="height:48%"></i><i style="height:34%"></i><i style="height:76%"></i>
+            <i style="height:58%"></i><i style="height:16%"></i><i style="height:40%"></i><i class="zero"></i>
+            <i style="height:64%"></i><i style="height:88%"></i><i style="height:30%"></i><i style="height:52%"></i>
+            <i style="height:70%"></i><i style="height:44%"></i><i style="height:26%"></i>
+          </div>
+          <div class="axis"><span>10月3日</span><span>10月18日</span><span>11月2日</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 06 MAP ============ -->
+<section class="fam" id="fam-map">
+  <h2>06 · 地图 Map</h2>
+  <p class="fam-sub">四个界面有地图，其余没有。App 从不申请定位、从不画用户点（FR-9.5）。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-27</span><h3>MapSurface</h3><span class="spec-meta">3 个页面</span></div>
+      <p class="spec-note">唯一实例化地图的地方。卡内 200 / 260 pt，圆角 14；历史轨迹为全幅。标准地图、无起伏、无路况、无 3D。</p>
+      <div class="stage stack">
+        <div class="map" style="height:150px">
+          <svg class="roads" viewBox="0 0 380 150" preserveAspectRatio="none">
+            <path d="M-10 40 L390 22" stroke="rgba(255,255,255,.07)" stroke-width="8" fill="none"/>
+            <path d="M-10 118 L390 132" stroke="rgba(255,255,255,.05)" stroke-width="11" fill="none"/>
+            <path d="M110 -10 L88 160" stroke="rgba(255,255,255,.06)" stroke-width="6" fill="none"/>
+            <path d="M250 -10 L282 160" stroke="rgba(255,255,255,.05)" stroke-width="5" fill="none"/>
+          </svg>
+          <div class="pin" style="left:56%;top:44%"></div>
+          <div class="map-chip"><svg class="icon xs"><use href="#ic-target"/></svg>杭州市 · 拱墅区</div>
+          <div class="map-link">查看<svg class="icon xs"><use href="#ic-chevron"/></svg></div>
+        </div>
+        <div class="cap-sm">卡内 200 / 260 pt · 单点标记</div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-28</span><h3>TrackLayer</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">一条 3 pt 线，圆角连接，强调色；起点实心点、终点箭头。<b>靠形状区分，不靠颜色</b>——灰度与色盲下依然可辨（FR-9.4）。</p>
+      <div class="stage">
+        <div class="map" style="height:180px">
+          <svg class="roads" viewBox="0 0 380 180" preserveAspectRatio="none">
+            <path d="M-10 60 L390 40" stroke="rgba(255,255,255,.06)" stroke-width="8" fill="none"/>
+            <path d="M-10 140 L390 156" stroke="rgba(255,255,255,.05)" stroke-width="10" fill="none"/>
+            <path d="M150 -10 L120 190" stroke="rgba(255,255,255,.05)" stroke-width="6" fill="none"/>
+          </svg>
+          <svg viewBox="0 0 380 180" style="position:absolute;inset:0;width:100%;height:100%">
+            <path d="M54 138 C88 120 96 96 130 92 S196 104 216 78 S262 44 300 40"
+                  fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="54" cy="138" r="6" fill="var(--green)" stroke="var(--screen-a)" stroke-width="2"/>
+            <path d="M300 40 l12 4 l-9 9 z" fill="var(--orange)"/>
+          </svg>
+          <div class="map-chip" style="border-radius:999px">18.6 km · 36 分钟</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-29</span><h3>MapOverlayPill</h3><span class="spec-meta">3 个页面</span></div>
+      <p class="spec-note">三个锚点：左上状态、左下地点（强调色图标）、右下动作（强调色文字）。玻璃 16 % → 5 %，blur 16 / 170 %。</p>
+      <div class="stage">
+        <div class="map" style="height:170px">
+          <svg class="roads" viewBox="0 0 380 170" preserveAspectRatio="none">
+            <path d="M-10 50 L390 34" stroke="rgba(255,255,255,.07)" stroke-width="9" fill="none"/>
+            <path d="M-10 130 L390 146" stroke="rgba(255,255,255,.05)" stroke-width="12" fill="none"/>
+            <path d="M190 -10 L170 180" stroke="rgba(255,255,255,.05)" stroke-width="7" fill="none"/>
+          </svg>
+          <div class="map-pill">标准地图</div>
+          <div class="map-chip"><svg class="icon xs"><use href="#ic-target"/></svg>文三路 · 西湖区</div>
+          <div class="map-link">全屏<svg class="icon xs"><use href="#ic-chevron"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-30</span><h3>RecenterControl</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">用户第一次拖动地图后出现；点击后恢复视角并<b>继续跟随</b>。跟随期间不出现。</p>
+      <div class="stage">
+        <div class="map" style="height:170px">
+          <svg class="roads" viewBox="0 0 380 170" preserveAspectRatio="none">
+            <path d="M-10 70 L390 54" stroke="rgba(255,255,255,.07)" stroke-width="9" fill="none"/>
+            <path d="M-10 140 L390 156" stroke="rgba(255,255,255,.05)" stroke-width="12" fill="none"/>
+            <path d="M240 -10 L220 180" stroke="rgba(255,255,255,.05)" stroke-width="7" fill="none"/>
+          </svg>
+          <div class="pin" style="left:36%;top:52%"></div>
+          <div class="map-link" style="display:flex;gap:6px"><svg class="icon xs"><use href="#ic-target"/></svg>回中</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 07 FEEDBACK ============ -->
+<section class="fam" id="fam-feedback">
+  <h2>07 · 反馈 Feedback</h2>
+  <p class="fam-sub">加载、失败、空。三种状态都必须说清发生了什么，且至少给一个动作（FR-8.4）。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-31</span><h3>ErrorBanner</h3><span class="spec-meta">7 个页面</span></div>
+      <p class="spec-note">橙色图标 + 文案，着色玻璃底、圆角 16。<b>带动作的变体</b>用于 401 与可重试的失败；现有实现只有文案，没有动作位。</p>
+      <div class="stage stack">
+        <div class="banner"><svg class="icon"><use href="#ic-warn"/></svg><span>数据已过期，展示最后已知状态</span></div>
+        <div class="banner"><svg class="icon"><use href="#ic-warn"/></svg><span>Token 无效</span><span class="act">去设置</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-32</span><h3>EmptyState</h3><span class="spec-meta">4 个页面</span></div>
+      <p class="spec-note">36 pt 符号、标题、一句话、<b>一个动作</b>。不伪造数据。<b>现有 `EmptyStateView` 缺这个动作</b>，规格与实现一起修。</p>
+      <div class="stage">
+        <div class="empty">
+          <svg class="icon"><use href="#ic-clock"/></svg>
+          <h4>近 30 天没有行程</h4>
+          <p>换一个时间段，或者等下次出发。</p>
+          <span class="act">切换时间段</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-33</span><h3>Skeleton</h3><span class="spec-meta">8 个页面</span></div>
+      <p class="spec-note">卡片形占位 + 1.2 s 微光，<b>仅在首次加载</b>；之后保留内容加小转圈。目前代码只有 `ProgressView`，正是设计否定的全屏转圈。</p>
+      <div class="stage">
+        <div class="sk" style="height:96px"><div class="l" style="width:40%"></div><div class="l" style="width:70%"></div></div>
+        <div class="row" style="margin-top:12px;gap:12px">
+          <div class="sk" style="height:74px;flex:1"><div class="l" style="width:55%"></div></div>
+          <div class="sk" style="height:74px;flex:1"><div class="l" style="width:45%"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 08 FORMS ============ -->
+<section class="fam" id="fam-forms">
+  <h2>08 · 表单与操作 Forms</h2>
+  <p class="fam-sub">只有引导页、设置页和（将来的）记一笔费用会用到。组件只负责绘制；确认框与请求中的标志由页面持有。</p>
+  <div class="gallery">
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-34</span><h3>GlassField</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">圆角 18、内边距 11 / 13，标签 10 pt 大写、字距 .06em。四种状态：文本、掩码、聚焦、错误。</p>
+      <div class="stage">
+        <div class="field"><div class="fl">服务器地址</div><div class="fv">https://api.example.com</div></div>
+        <div class="field"><div class="fl">API Token</div><div class="fv masked">••••••••••••••••••••••••</div></div>
+        <div class="field focused"><div class="fl">服务器地址</div><div class="fv">https://api.example.com/</div></div>
+        <div class="field error"><div class="fl">API Token</div><div class="fv masked">••••••••</div><div class="hintline">Token 无效，请重新复制</div></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-35</span><h3>PrimaryButton</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">50 pt 高、圆角 18，青色渐变、深色文字、内高光加一层青色外发光。禁用去掉渐变，加载把文字换成转圈但保持宽度。</p>
+      <div class="stage stack">
+        <div class="primary">测试并保存</div>
+        <div class="primary disabled">测试并保存</div>
+        <div class="primary loading"><span class="spin"></span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-36</span><h3>DestructiveButton</h3><span class="spec-meta">2 个页面</span></div>
+      <p class="spec-note">红色着色玻璃、圆角 18。组件只画按钮，<b>确认框由调用方负责</b>。</p>
+      <div class="stage">
+        <div class="destructive">清除 Token</div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-37</span><h3>ToggleRow</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">45 × 27 的玻璃开关，滑钮 21 pt、内缩 3。<b>点一下切换</b>；改动会在界面重绘，但不重新请求数据（FR-2.4）。</p>
+      <div class="stage stack">
+        <div class="row-between"><div class="cap" style="color:var(--text);font-size:13px">中国坐标偏移校正</div><div class="toggle" data-toggle></div></div>
+        <div class="row-between"><div class="cap" style="color:var(--text);font-size:13px">已关闭</div><div class="toggle off" data-toggle></div></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-head"><span class="spec-id">C-38</span><h3>HeroGlyph</h3><span class="spec-meta">1 个页面</span></div>
+      <p class="spec-note">78 pt 圆角方块、强调色着色玻璃，装一个图标。引导页唯一的大图形。</p>
+      <div class="stage" style="display:grid;place-items:center;height:150px">
+        <div class="hero-glyph"><svg class="icon lg"><use href="#ic-car"/></svg></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 09 COMPOSE ============ -->
+<section class="fam" id="compose">
+  <h2>09 · 组装示例 Composition</h2>
+  <p class="fam-sub">把上面的部件按实时页的顺序拼起来。页面自己几乎不画东西——这就是这份清单的意义。</p>
+  <div class="compose">
+    <div class="ph">
+      <div class="scroller">
+        <div class="nav head">
+          <div class="nav-group"><div class="nav-title">Roadster Lite™</div></div>
+          <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#ic-refresh"/></svg></div></div>
+        </div>
+        <div class="row-between" style="margin-bottom:14px">
+          <span class="pill online"><i class="dot"></i>在线</span>
+          <span class="fresh">最后更新 12 秒前</span>
+        </div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="ring-wrap">
+            <div class="ring" style="width:104px;height:104px">
+              <svg viewBox="0 0 104 104" style="width:104px;height:104px">
+                <circle cx="52" cy="52" r="46" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+                <circle cx="52" cy="52" r="46" fill="none" stroke="var(--green)" stroke-width="10" stroke-linecap="round" stroke-dasharray="214 290"/>
+              </svg>
+              <div class="ring-label"><div class="big" style="font-size:23px">74%</div><div class="sub">电量</div></div>
+            </div>
+            <div>
+              <div class="cap">续航</div>
+              <div><span class="range-num" style="font-size:28px">382</span><span class="range-unit">km</span></div>
+              <div class="cap-sm" style="margin-top:6px">估算 419 · 额定 382</div>
+            </div>
+          </div>
+        </div>
+        <div class="map" style="height:150px;margin-bottom:12px">
+          <svg class="roads" viewBox="0 0 326 150" preserveAspectRatio="none">
+            <path d="M-10 44 L340 26" stroke="rgba(255,255,255,.07)" stroke-width="8" fill="none"/>
+            <path d="M-10 120 L340 134" stroke="rgba(255,255,255,.05)" stroke-width="11" fill="none"/>
+            <path d="M96 -10 L74 160" stroke="rgba(255,255,255,.06)" stroke-width="6" fill="none"/>
+            <path d="M222 -10 L250 160" stroke="rgba(255,255,255,.05)" stroke-width="5" fill="none"/>
+          </svg>
+          <div class="pin" style="left:58%;top:46%"></div>
+          <div class="map-chip"><svg class="icon xs"><use href="#ic-target"/></svg>杭州市 · 拱墅区</div>
+        </div>
+        <div class="tiles" style="margin-bottom:12px">
+          <div class="tile"><svg class="icon sm"><use href="#ic-gauge"/></svg><div class="label">速度</div><div class="value">0 <small>km/h</small></div></div>
+          <div class="tile"><svg class="icon sm"><use href="#ic-bolt"/></svg><div class="label">功率</div><div class="value">0.0 <small>kW</small></div></div>
+          <div class="tile"><svg class="icon sm"><use href="#ic-road"/></svg><div class="label">里程</div><div class="value">48,213 <small>km</small></div></div>
+          <div class="tile"><svg class="icon sm"><use href="#ic-car"/></svg><div class="label">挡位</div><div class="value">P</div></div>
+        </div>
+        <div class="card soft">
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-lock"/></svg><div class="label">车锁</div><div class="value ok">已锁</div></div>
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-window"/></svg><div class="label">车窗</div><div class="value ok">已关</div></div>
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-door"/></svg><div class="label">车门</div><div class="value ok">已关</div></div>
+          <div class="mini-row"><svg class="icon sm"><use href="#ic-thermo"/></svg><div class="label">车外温度</div><div class="value">17.5 °C</div></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab on"><svg class="icon"><use href="#ic-gauge"/></svg>实时</div>
+        <div class="tab"><svg class="icon"><use href="#ic-road"/></svg>行程</div>
+        <div class="tab"><svg class="icon"><use href="#ic-bolt"/></svg>充电</div>
+        <div class="tab"><svg class="icon"><use href="#ic-chart"/></svg>统计</div>
+        <div class="tab"><svg class="icon"><use href="#ic-settings"/></svg>设置</div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:300px;max-width:460px">
+      <div class="label-mini">这一屏用到的组件</div>
+      <div class="cap" style="line-height:2">
+        C-01 背景 · C-02 顶部栏 · C-03 动作 · C-06 标签栏<br>
+        C-09 卡片 · C-14 电量环 · C-17 信息行 · C-15 磁贴<br>
+        C-18 状态徽章 · C-21 新鲜度 · C-27 地图 · C-29 浮层胶囊
+      </div>
+      <div class="label-mini">这一屏没有用到</div>
+      <div class="cap" style="line-height:2">
+        C-05 分段控件 · C-07 日期头 · C-23 充电行 · C-25 图表 …<br>
+        <span style="color:var(--faint)">它们属于行程、充电、详情页——下一屏才拼得到。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // C-02: wrap the header once the content has moved ~8 pt
+  document.querySelectorAll('.scr').forEach(function (scr) {
+    var scroller = scr.querySelector('.scroller');
+    var nav = scr.querySelector('.nav.head');
+    if (!scroller || !nav) return;
+    var update = function () { nav.classList.toggle('is-stuck', scroller.scrollTop > 8); };
+    scroller.addEventListener('scroll', update, { passive: true });
+    update();
+  });
+
+  // C-05: segmented control
+  document.querySelectorAll('[data-seg]').forEach(function (seg) {
+    seg.addEventListener('click', function (e) {
+      var item = e.target.closest('div');
+      if (!item || !seg.contains(item) || item === seg) return;
+      seg.querySelectorAll(':scope > div').forEach(function (d) { d.classList.remove('on'); });
+      item.classList.add('on');
+    });
+  });
+
+  // C-37: toggle
+  document.querySelectorAll('[data-toggle]').forEach(function (t) {
+    t.addEventListener('click', function () { t.classList.toggle('off'); });
+  });
+</script>
+</body>
+</html>

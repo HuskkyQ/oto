@@ -1,0 +1,15 @@
+services:
+  api:
+    build: ./server
+    restart: always
+    env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - teslamate
+
+networks:
+  teslamate:
+    external: true
+    # Confirm with: docker network ls
+    name: startfile_default

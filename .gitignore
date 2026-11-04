@@ -1,0 +1,10 @@
+.env
+node_modules/
+ios/build/
+ios/DerivedData/
+ios/TeslaMateViewer.xcodeproj/
+
+.DS_Store
+.serena/
+.playwright-mcp/
+ios/.chart-shots/

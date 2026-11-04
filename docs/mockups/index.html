@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TeslaMate Viewer — UI Mockups</title>
+<style>
+  :root {
+    --bg: #070a12;
+    --screen-a: #0a0f1a;
+    --screen-b: #141a29;
+    --card: rgba(255, 255, 255, .06);
+    --stroke: rgba(255, 255, 255, .10);
+    /* Liquid glass: a translucent body, a specular rim and one soft inner highlight. */
+    --glass-body:
+      radial-gradient(150% 110% at 2% -12%, rgba(255,255,255,.10), transparent 56%),
+      linear-gradient(150deg, rgba(255,255,255,.075), rgba(255,255,255,.028) 46%, rgba(255,255,255,.05));
+    --glass-body-soft:
+      radial-gradient(150% 110% at 2% -12%, rgba(255,255,255,.075), transparent 56%),
+      linear-gradient(150deg, rgba(255,255,255,.05), rgba(255,255,255,.016) 52%, rgba(255,255,255,.034));
+    --glass-rim: linear-gradient(150deg, rgba(255,255,255,.50), rgba(255,255,255,.10) 34%, rgba(255,255,255,.03) 64%, rgba(255,255,255,.20));
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 14px 34px rgba(0,0,0,.26);
+    --glass-blur: blur(24px) saturate(175%);
+    --accent: #5cc7ff;
+    --green: #5cd98f;
+    --orange: #ffaa4d;
+    --red: #ff6e6e;
+    --purple: #ad8cff;
+    --text: #f5f7fa;
+    --muted: rgba(235, 240, 255, .55);
+    --faint: rgba(235, 240, 255, .32);
+  }
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(1000px 600px at 15% -10%, rgba(92, 199, 255, .10), transparent 60%),
+      radial-gradient(800px 500px at 90% 10%, rgba(173, 140, 255, .07), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif;
+    padding: 56px 40px 100px;
+  }
+  .page-head { max-width: 1680px; margin: 0 auto 44px; }
+  .eyebrow { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: -.02em; margin: 10px 0 8px; }
+  .lede { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 820px; margin: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 22px; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; }
+
+  .frames {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 56px 48px; align-items: flex-start;
+  }
+  .frame { width: 390px; }
+  .phone {
+    width: 390px; height: 844px; padding: 10px; border-radius: 56px;
+    background: #000;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(255,255,255,.12);
+    position: relative;
+  }
+  .screen {
+    position: relative; height: 100%; border-radius: 46px; overflow: hidden;
+    background:
+      radial-gradient(130% 42% at 50% -8%, rgba(255, 255, 255, .07), transparent 70%),
+      radial-gradient(118% 46% at 16% 32%, rgba(92, 199, 255, .18), transparent 70%),
+      radial-gradient(100% 42% at 96% 50%, rgba(173, 140, 255, .15), transparent 70%),
+      radial-gradient(120% 50% at 50% 112%, rgba(64, 196, 214, .12), transparent 72%),
+      linear-gradient(180deg, var(--screen-a), var(--screen-b));
+    display: flex; flex-direction: column;
+  }
+  .island {
+    position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+    width: 112px; height: 32px; border-radius: 20px; background: #000; z-index: 30;
+  }
+  .status {
+    height: 54px; flex: none; display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 26px 6px; font-size: 13px; font-weight: 600; letter-spacing: .02em; z-index: 20;
+  }
+  .status-right { display: flex; align-items: center; gap: 6px; }
+  .bars { display: flex; align-items: flex-end; gap: 2px; height: 10px; }
+  .bars i { width: 3px; background: var(--text); border-radius: 1px; }
+  .bars i:nth-child(1) { height: 4px; } .bars i:nth-child(2) { height: 6px; }
+  .bars i:nth-child(3) { height: 8px; } .bars i:nth-child(4) { height: 10px; }
+  .batt { width: 22px; height: 11px; border: 1px solid rgba(255,255,255,.6); border-radius: 3px; padding: 1px; }
+  .batt::after { content: ""; display: block; width: 74%; height: 100%; background: var(--text); border-radius: 1px; }
+
+  .content { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 16px 100px; scrollbar-width: none; }
+  .content::-webkit-scrollbar { display: none; }
+
+  /* Header: a full-bleed, borderless bar at rest. It stays pinned to the top of the
+     scroll view and wraps itself into a glass capsule once the page scrolls. */
+  .nav.head {
+    position: sticky; top: 0; z-index: 15; isolation: isolate; flex: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin: 0 -16px 12px; padding: 14px 16px 12px; border-radius: 0;
+    transition: margin .22s cubic-bezier(.32,.72,0,1), padding .22s cubic-bezier(.32,.72,0,1),
+                border-radius .22s cubic-bezier(.32,.72,0,1);
+  }
+  .nav.head::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid transparent;
+    border-radius: inherit; opacity: 0;
+    background: linear-gradient(150deg, rgba(255,255,255,.13), rgba(255,255,255,.05) 46%, rgba(255,255,255,.07)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 14px 30px rgba(0,0,0,.32);
+    transition: opacity .18s ease;
+  }
+  /* Wrapped state: inset 12 pt, 28 pt radius, glass body with its rim and shadow.
+     `.wrapped` forces it for screens that never scroll and sit over a map. */
+  .nav.head.is-stuck, .nav.head.wrapped {
+    margin: 0 -4px 12px; padding: 10px 16px; border-radius: 28px;
+  }
+  .nav.head.is-stuck::before, .nav.head.wrapped::before { opacity: 1; }
+  .nav-group { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  /* Frames whose .content has no side padding (History) bleed from 0, not -16. */
+  .nav.head.bleed { margin-left: 0; margin-right: 0; }
+  .nav.head.bleed.is-stuck, .nav.head.bleed.wrapped { margin-left: 12px; margin-right: 12px; }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav.head::before { background: #18222f padding-box, var(--glass-rim) border-box; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav.head, .nav.head::before { transition: none; }
+  }
+  .filters { margin: 4px 0 16px; flex: none; }
+  .filterbar { display: flex; gap: 10px; }
+  .tabbar {
+    position: absolute; left: 12px; right: 12px; bottom: 10px; height: 64px; z-index: 20;
+    display: flex; gap: 2px; padding: 6px;
+    border-radius: 26px; border: 1px solid transparent;
+    background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.04)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 18px 40px rgba(0,0,0,.42);
+  }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 20px; color: var(--faint); font-size: 9.5px; }
+  .tab.on {
+    color: var(--accent);
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.26);
+  }
+  .tab .icon { width: 22px; height: 22px; }
+
+  .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .icon.sm { width: 16px; height: 16px; }
+  .icon.lg { width: 26px; height: 26px; }
+
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0 10px; }
+  .nav-title { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+  .nav-sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  /* Buttons ride inside the header capsule, so they carry no glass of their own. */
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+    color: rgba(255, 255, 255, .74); flex: none;
+  }
+  .nav-caption { color: var(--muted); font-size: 12px; margin: 0 0 6px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .pill.online { color: var(--green); background: rgba(92, 217, 143, .14); }
+  .pill.charging { color: var(--orange); background: rgba(255, 170, 77, .14); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .card {
+    padding: 16px; border: 1px solid transparent; border-radius: 24px;
+    background: var(--glass-body) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+  }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .section-title { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+  .cap { color: var(--muted); font-size: 12px; }
+  .cap-sm { color: var(--faint); font-size: 11px; }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  .seg {
+    display: flex; gap: 4px; padding: 3px; border-radius: 16px;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.05) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  }
+  .seg div { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); padding: 7px 0; border-radius: 13px; }
+  .seg div.on {
+    color: var(--accent);
+    background: linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.30), 0 4px 12px rgba(0,0,0,.20);
+  }
+  .seg.small div { padding: 5px 0; font-size: 11px; }
+
+  .ring-wrap { display: flex; align-items: center; gap: 20px; }
+  .ring { position: relative; width: 132px; height: 132px; flex: none; }
+  .ring svg { width: 132px; height: 132px; transform: rotate(-90deg); }
+  .ring .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .ring .big { font-size: 28px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .ring .sub { font-size: 10px; color: var(--muted); }
+  .range-num { font-size: 34px; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .range-unit { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+
+  .map { position: relative; height: 206px; border-radius: 14px; overflow: hidden; background: radial-gradient(120% 120% at 70% 20%, #1b2740 0%, #111a2a 55%, #0d1421 100%); }
+  .map .roads { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map .water { position: absolute; right: -18%; top: 52%; width: 58%; height: 80%; background: #14243c; border-radius: 50%; transform: rotate(-18deg); opacity: .9; }
+  .pin { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid rgba(92,199,255,.28); box-shadow: 0 0 0 8px rgba(92,199,255,.10); transform: translate(-50%, -50%); }
+  .map-chip, .map-link, .map-pill {
+    position: absolute; display: flex; align-items: center; gap: 6px; padding: 7px 11px;
+    border-radius: 999px; font-size: 11px; border: 1px solid transparent;
+    background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.05)) padding-box,
+                var(--glass-rim) border-box;
+    -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px rgba(0,0,0,.28);
+  }
+  .map-chip { left: 10px; bottom: 10px; }
+  .map-chip .icon { color: var(--accent); }
+  .map-link { right: 10px; bottom: 10px; color: var(--accent); }
+  .map-pill { left: 10px; top: 10px; padding: 6px 10px; color: var(--muted); }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    padding: 14px 16px; border: 1px solid transparent; border-radius: 22px;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .tile .icon { color: var(--accent); margin-bottom: 10px; }
+  .tile .label { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .tile .value { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .value small { font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 2px; }
+
+  .mini-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mini-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .mini-row:first-child { padding-top: 0; }
+  .mini-row .icon { color: var(--muted); }
+  .mini-row .label { flex: 1; font-size: 13px; color: var(--muted); }
+  .mini-row .value { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--green); } .warn { color: var(--orange); }
+
+  .stat-strip { display: flex; }
+  .stat-strip > div { flex: 1; }
+  .stat-strip .n { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-strip .n small { font-size: 11px; font-weight: 500; color: var(--muted); }
+  .stat-strip .l { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .day { display: flex; justify-content: space-between; align-items: baseline; margin: 16px 2px 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .day span:last-child { font-weight: 500; color: var(--faint); font-variant-numeric: tabular-nums; }
+
+  .trip { display: grid; grid-template-columns: 44px 14px 1fr auto; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .trip:last-child { border-bottom: 0; }
+  .trip .times { display: flex; flex-direction: column; justify-content: space-between; padding: 1px 0; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rail { position: relative; }
+  .rail::before { content: ""; position: absolute; left: 6px; top: 7px; bottom: 7px; width: 2px; background: rgba(255,255,255,.12); border-radius: 2px; }
+  .rail .d1, .rail .d2 { position: absolute; left: 1px; width: 12px; height: 12px; border-radius: 50%; }
+  .rail .d1 { top: 0; background: var(--green); box-shadow: 0 0 0 3px rgba(92,217,143,.12); }
+  .rail .d2 { bottom: 0; background: var(--orange); box-shadow: 0 0 0 3px rgba(255,170,77,.12); }
+  .trip .places { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; min-width: 0; }
+  .trip .places div { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trip .places div:first-child { font-weight: 600; }
+  .trip .places div:last-child { color: var(--muted); }
+  .trip .right { text-align: right; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .trip .right .km { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trip .right .min { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .chart-card {
+    padding: 14px 16px 8px; border: 1px solid transparent; border-radius: 24px;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .chart-head .t { font-size: 13px; font-weight: 600; }
+  .chart-head .v { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .chart { width: 100%; display: block; }
+
+  .energy-badge {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 20px;
+    border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(92,217,143,.16), rgba(92,217,143,.05)) padding-box,
+                linear-gradient(150deg, rgba(92,217,143,.45), rgba(92,217,143,.10) 55%, rgba(255,255,255,.08)) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .energy-badge .icon { color: var(--green); }
+  .energy-badge .n { font-size: 16px; font-weight: 700; }
+  .energy-badge .n small { font-size: 10px; font-weight: 500; color: var(--muted); }
+  .energy-badge .cap { margin-left: auto; }
+
+  .soc { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+  .soc .track { position: relative; flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); }
+  .soc .fill { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, var(--green), #8ce8ae); }
+  .soc .p { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .charge-row { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .charge-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .charge-top { display: flex; align-items: flex-start; gap: 10px; }
+  .charge-icon { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: rgba(92,199,255,.10); color: var(--accent); flex: none; }
+  .charge-main { flex: 1; min-width: 0; }
+  .charge-main .where { font-size: 13px; font-weight: 600; }
+  .charge-main .when { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .charge-right { text-align: right; }
+  .charge-right .kwh { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .charge-right .dur { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .big-hero { text-align: left; }
+  .big-hero .n { font-size: 40px; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .big-hero .n small { font-size: 15px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+
+  .bars-chart { display: flex; align-items: flex-end; gap: 5px; height: 110px; padding-top: 8px; }
+  .bars-chart i { flex: 1; border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, rgba(92,199,255,.95), rgba(92,199,255,.28)); min-height: 2px; }
+  .bars-chart i.zero { background: rgba(255,255,255,.10); height: 2px !important; }
+  .axis { display: flex; justify-content: space-between; color: var(--faint); font-size: 10px; margin-top: 8px; }
+
+  .entry {
+    display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 20px;
+    border: 1px solid transparent;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .entry .thumb { width: 52px; height: 52px; border-radius: 13px; background: radial-gradient(120% 120% at 70% 20%, #1b2740, #0d1421); position: relative; overflow: hidden; flex: none; }
+  .entry .thumb svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .entry .t { font-size: 13px; font-weight: 600; }
+  .entry .s { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .settings-group {
+    border: 1px solid transparent; border-radius: 22px; overflow: hidden;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .settings-group + .settings-group { margin-top: 18px; }
+  .group-label { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 8px 4px; }
+  .srow { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .srow:last-child { border-bottom: 0; }
+  .srow .label { flex: 1; font-size: 13px; }
+  .srow .value { font-size: 12px; color: var(--muted); max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .srow .icon { color: var(--faint); }
+  .toggle { width: 45px; height: 27px; border-radius: 999px; background: rgba(92, 199, 255, .30); position: relative; flex: none; }
+  .toggle::after { content: ""; position: absolute; right: 3px; top: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; }
+  .destructive {
+    text-align: center; color: #ff8f8f; font-size: 13px; font-weight: 600; padding: 14px;
+    border-radius: 18px; border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(255,110,110,.16), rgba(255,110,110,.05)) padding-box,
+                linear-gradient(150deg, rgba(255,110,110,.45), rgba(255,110,110,.10) 60%) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .switch { width: 45px; height: 27px; border-radius: 999px; background: linear-gradient(180deg, #7ad4ff, #3fb0ec); box-shadow: inset 0 1px 0 rgba(255,255,255,.50); position: relative; flex: none; }
+  .switch::after { content: ""; position: absolute; right: 3px; top: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; }
+
+  .onboard { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 26px 60px; text-align: center; }
+  .onboard .glyph {
+    width: 78px; height: 78px; margin: 0 auto 22px; border-radius: 28px; display: grid; place-items: center;
+    color: var(--accent); border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(92,199,255,.22), rgba(92,199,255,.06)) padding-box,
+                linear-gradient(150deg, rgba(92,199,255,.55), rgba(255,255,255,.10) 60%) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 16px 32px rgba(0,0,0,.28);
+  }
+  .onboard h2 { font-size: 26px; margin: 0 0 10px; letter-spacing: -.02em; }
+  .onboard p { color: var(--muted); font-size: 13px; line-height: 1.65; margin: 0 0 26px; }
+  .field {
+    text-align: left; padding: 11px 13px; margin-bottom: 10px; border-radius: 18px;
+    border: 1px solid transparent;
+    background: var(--glass-body-soft) padding-box, var(--glass-rim) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .field .fl { font-size: 10px; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+  .field .fv { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .field .fv.masked { letter-spacing: .12em; color: var(--muted); }
+  .primary {
+    margin-top: 8px; height: 50px; border-radius: 18px; display: grid; place-items: center;
+    color: #05131d; font-size: 15px; font-weight: 700; border: 1px solid transparent;
+    background: linear-gradient(180deg, #8ad9ff, #46baf5) padding-box,
+                linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.15)) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 12px 26px rgba(92,199,255,.30);
+  }
+  .hint { margin-top: 14px; color: var(--muted); font-size: 11px; line-height: 1.6; opacity: .8; }
+
+  .caption { margin-top: 16px; display: flex; align-items: baseline; gap: 10px; }
+  .caption .idx { font-size: 11px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .caption .name { font-size: 14px; font-weight: 600; }
+  .caption .api { font-size: 11px; color: var(--faint); margin-left: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  .banner {
+    display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 16px;
+    color: var(--orange); font-size: 11px; border: 1px solid transparent;
+    background: linear-gradient(150deg, rgba(255,170,77,.16), rgba(255,170,77,.05)) padding-box,
+                linear-gradient(150deg, rgba(255,170,77,.40), rgba(255,170,77,.08) 60%, rgba(255,255,255,.06)) border-box;
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  }
+  .banner .icon { width: 15px; height: 15px; }
+
+  .history-sheet {
+    position: relative; z-index: 6; flex: none;
+    margin-top: -56px; padding: 56px 16px 20px;
+    background: linear-gradient(180deg, rgba(10, 15, 26, 0) 0%, rgba(11, 17, 32, .62) 34%, rgba(11, 17, 32, .90) 68%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
+  }
+  .history-sheet .card { margin-top: 0; }
+  .legend-map { display: flex; gap: 14px; align-items: center; color: var(--muted); font-size: 11px; margin-top: 10px; }
+  .legend-map span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-map i { width: 7px; height: 7px; border-radius: 50%; }
+
+  @media (max-width: 900px) {
+    body { padding: 32px 18px 60px; }
+    .frames { gap: 40px; justify-content: center; }
+    .frame { transform-origin: top center; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.6"/><circle cx="18" cy="5" r="2.6"/><path d="M8.6 19h4.4a4 4 0 0 0 4-4V7.6"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-window" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M4 12h16"/></symbol>
+  <symbol id="i-door" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h9l5 5v13"/><circle cx="15" cy="12" r="1"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M20.5 16a9 9 0 1 0-17 0"/><path d="M12 14l4-4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0z"/><path d="M12 16v6"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9 0 12-4 16-9 16z"/><path d="M4 21c4-8 8-12 13-14"/></symbol>
+  <symbol id="i-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+</svg>
+
+<header class="page-head">
+  <div class="eyebrow">TeslaMate Viewer · iOS 17</div>
+  <h1>UI 设计稿 / UI Mockups</h1>
+  <p class="lede">
+    Dark-only, Chinese-first, data-first, Liquid Glass. Every surface is translucent glass over a
+    tinted backdrop: bright specular rim, one soft inner highlight, no flat panels. Every screen
+    maps to a read-only API route and to real fields that already exist in the server. Values below
+    are representative, not a live capture. Scroll inside any phone frame to see the pinned header
+    and filter bar. Full specs:
+    <code>docs/UI-DESIGN.md</code>. Screens beyond v1 are in
+    <a href="gap-screens.html" style="color:var(--accent)">gap-screens.html</a>.
+  </p>
+  <div class="legend">
+    <span><i class="swatch" style="background:#5cc7ff"></i>accent 交互 / 主指标</span>
+    <span><i class="swatch" style="background:#5cd98f"></i>green 在线 / 已锁 / 低能耗</span>
+    <span><i class="swatch" style="background:#ffaa4d"></i>orange 充电 / 过期 / 警示</span>
+    <span><i class="swatch" style="background:#ff6e6e"></i>red 错误 / 低电量</span>
+    <span><i class="swatch" style="background:#ad8cff"></i>purple 暂停 / 更新</span>
+  </div>
+</header>
+
+<div class="frames">
+
+  <!-- 01 LIVE -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div>
+                <div class="nav-title">★Roadster Lite™</div>
+                <div class="nav-sub">Model 3 · LR AWD</div>
+              </div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-refresh"/></svg></div></div>
+          </div>
+
+          <div class="row-between" style="margin:8px 2px 14px">
+            <span class="pill online"><i class="dot"></i>在线</span>
+            <span class="cap">最后更新 12 秒前</span>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="ring-wrap">
+              <div class="ring">
+                <svg viewBox="0 0 132 132">
+                  <circle cx="66" cy="66" r="54" stroke="rgba(255,255,255,.08)" stroke-width="12" fill="none"/>
+                  <circle cx="66" cy="66" r="54" stroke="#5cd98f" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="251 340"/>
+                </svg>
+                <div class="ring-label">
+                  <div class="big num">74%</div>
+                  <div class="sub">电量</div>
+                </div>
+              </div>
+              <div style="flex:1">
+                <div class="cap">续航</div>
+                <div style="margin:4px 0 14px"><span class="range-num num">382</span><span class="range-unit">km</span></div>
+                <div class="mini-row"><span class="label">估算续航</span><span class="value">419 km</span></div>
+                <div class="mini-row"><span class="label">额定续航</span><span class="value">382 km</span></div>
+                <div class="mini-row"><span class="label">充电枪</span><span class="value">未连接</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px; padding:12px">
+            <div class="map">
+              <div class="water"></div>
+              <svg class="roads" viewBox="0 0 360 200" preserveAspectRatio="none">
+                <path d="M-20 154C50 138 90 112 140 108s70-6 110-30S330 44 380 30" stroke="#26344a" stroke-width="9" fill="none"/>
+                <path d="M40-10c6 44 8 84-6 120s-14 66-8 96" stroke="#243147" stroke-width="7" fill="none"/>
+                <path d="M222-10c-2 40 8 70 28 96s30 62 22 118" stroke="#243147" stroke-width="6" fill="none"/>
+                <path d="M-10 62c60 6 96 10 132 26s86 20 130 14 70 2 120 18" stroke="#202c40" stroke-width="5" fill="none"/>
+                <path d="M110 205c-6-40 6-70 32-92s40-52 44-84" stroke="#2b3a52" stroke-width="4" fill="none"/>
+              </svg>
+              <div class="pin" style="left:57%; top:43%"></div>
+              <div class="map-chip"><svg class="icon"><use href="#i-pin"/></svg>杭州市 · 拱墅区</div>
+              <div class="map-link">查看<svg class="icon sm"><use href="#i-up-right"/></svg></div>
+            </div>
+          </div>
+
+          <div class="tiles" style="margin-bottom:12px">
+            <div class="tile"><svg class="icon"><use href="#i-gauge"/></svg><div class="label">速度</div><div class="value num">0 <small>km/h</small></div></div>
+            <div class="tile"><svg class="icon"><use href="#i-zap"/></svg><div class="label">功率</div><div class="value num">0.0 <small>kW</small></div></div>
+            <div class="tile"><svg class="icon"><use href="#i-battery"/></svg><div class="label">里程</div><div class="value num">32,466 <small>km</small></div></div>
+            <div class="tile"><svg class="icon"><use href="#i-route"/></svg><div class="label">挡位</div><div class="value">P <small>驻车</small></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-title">安全</div>
+            <div style="display:flex; gap:10px">
+              <div class="tile" style="flex:1; padding:10px 12px"><svg class="icon sm ok"><use href="#i-lock"/></svg><div class="label">车锁</div><div class="value" style="font-size:12px"><span class="ok">已锁</span></div></div>
+              <div class="tile" style="flex:1; padding:10px 12px"><svg class="icon sm"><use href="#i-shield"/></svg><div class="label">哨兵</div><div class="value" style="font-size:12px">关闭</div></div>
+              <div class="tile" style="flex:1; padding:10px 12px"><svg class="icon sm"><use href="#i-window"/></svg><div class="label">车窗</div><div class="value" style="font-size:12px">已关</div></div>
+              <div class="tile" style="flex:1; padding:10px 12px"><svg class="icon sm"><use href="#i-door"/></svg><div class="label">车门</div><div class="value" style="font-size:12px">已关</div></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-title">空调</div>
+            <div class="stat-strip">
+              <div><div class="n num">25.0<small>°C</small></div><div class="l">车内</div></div>
+              <div><div class="n num">17.5<small>°C</small></div><div class="l">车外</div></div>
+              <div><div class="n" style="font-size:16px">关闭</div><div class="l">空调</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+          <div class="tab"><svg class="icon"><use href="#i-sliders"/></svg>设置</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">01</span><span class="name">实时 Live</span><span class="api">/live</span></div>
+  </div>
+
+  <!-- 02 DRIVES -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div><div class="nav-title">行程</div><div class="nav-sub">近 30 天</div></div>
+            </div>
+            <div class="nav-group">
+              <div class="nav-btn" style="width:auto; padding:0 12px; display:flex; gap:5px; border-radius:999px; font-size:12px; color:var(--accent)">
+                <svg class="icon sm"><use href="#i-map"/></svg>轨迹
+              </div>
+            </div>
+          </div>
+          <div class="filters"><div class="seg"><div>7 天</div><div class="on">30 天</div><div>90 天</div></div></div>
+
+          <div class="card" style="margin-bottom:4px">
+            <div class="stat-strip">
+              <div><div class="n num">118.5<small> km</small></div><div class="l">总里程</div></div>
+              <div><div class="n num">12<small> 次</small></div><div class="l">行程</div></div>
+              <div><div class="n num">6<small> 时</small> 42<small> 分</small></div><div class="l">总时长</div></div>
+            </div>
+          </div>
+
+          <div class="day"><span>11月1日 周六</span><span>4.1 km</span></div>
+          <div class="card" style="padding:2px 16px">
+            <div class="trip">
+              <div class="times"><span>06:02</span><span>06:13</span></div>
+              <div class="rail"><span class="d1"></span><span class="d2"></span></div>
+              <div class="places"><div>祥符 · 拱墅区</div><div>和美弄</div></div>
+              <div class="right"><span class="km num">4.0 km</span><span class="min num">11 分钟</span></div>
+            </div>
+            <div class="trip">
+              <div class="times"><span>05:50</span><span>05:51</span></div>
+              <div class="rail"><span class="d1"></span><span class="d2"></span></div>
+              <div class="places"><div>石祥路充电站</div><div>祥符 · 拱墅区</div></div>
+              <div class="right"><span class="km num">0.1 km</span><span class="min num">1 分钟</span></div>
+            </div>
+          </div>
+
+          <div class="day"><span>10月26日 周日</span><span>30.3 km</span></div>
+          <div class="card" style="padding:2px 16px">
+            <div class="trip">
+              <div class="times"><span>14:20</span><span>15:08</span></div>
+              <div class="rail"><span class="d1"></span><span class="d2"></span></div>
+              <div class="places"><div>家 · 拱墅区</div><div>城西银泰</div></div>
+              <div class="right"><span class="km num">12.6 km</span><span class="min num">28 分钟</span></div>
+            </div>
+            <div class="trip">
+              <div class="times"><span>16:02</span><span>16:34</span></div>
+              <div class="rail"><span class="d1"></span><span class="d2"></span></div>
+              <div class="places"><div>城西银泰</div><div>公司 · 滨江区</div></div>
+              <div class="right"><span class="km num">17.7 km</span><span class="min num">32 分钟</span></div>
+            </div>
+          </div>
+
+          <div class="day"><span>10月25日 周六</span><span>24.0 km</span></div>
+          <div class="card" style="padding:2px 16px">
+            <div class="trip">
+              <div class="times"><span>09:10</span><span>09:42</span></div>
+              <div class="rail"><span class="d1"></span><span class="d2"></span></div>
+              <div class="places"><div>家 · 拱墅区</div><div>西湖景区</div></div>
+              <div class="right"><span class="km num">9.8 km</span><span class="min num">26 分钟</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab on"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+          <div class="tab"><svg class="icon"><use href="#i-sliders"/></svg>设置</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">02</span><span class="name">行程列表 Drives</span><span class="api">/drives</span></div>
+  </div>
+
+  <!-- 03 DRIVE DETAIL -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div><div class="nav-title" style="font-size:18px">行程详情</div></div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-up-right"/></svg></div></div>
+          </div>
+
+          <div class="card" style="padding:10px; margin-bottom:12px">
+            <div class="map" style="height:246px">
+              <div class="water"></div>
+              <svg class="roads" viewBox="0 0 360 246" preserveAspectRatio="none">
+                <path d="M-20 190C50 170 88 140 130 132s80-20 118-52 72-44 132-46" stroke="#26344a" stroke-width="10" fill="none"/>
+                <path d="M60-10c4 50 0 92-14 128s-16 78-8 138" stroke="#243147" stroke-width="7" fill="none"/>
+                <path d="M250-10c-6 46 2 80 20 106s28 70 20 160" stroke="#243147" stroke-width="6" fill="none"/>
+                <path d="M-10 92c58 8 98 18 132 40s88 28 130 22 70 0 118 14" stroke="#202c40" stroke-width="5" fill="none"/>
+              </svg>
+              <svg class="roads" viewBox="0 0 360 246" preserveAspectRatio="none">
+                <path d="M64 196c30-6 54-18 70-38s10-44 34-58 52-6 74-22 32-38 58-44" stroke="rgba(92,199,255,.18)" stroke-width="12" fill="none" stroke-linecap="round"/>
+                <path d="M64 196c30-6 54-18 70-38s10-44 34-58 52-6 74-22 32-38 58-44" stroke="#5cc7ff" stroke-width="4" fill="none" stroke-linecap="round"/>
+              </svg>
+              <div class="pin" style="left:17.8%; top:79.7%; background:#5cd98f; box-shadow:0 0 0 8px rgba(92,217,143,.12)"></div>
+              <div class="pin" style="left:83.3%; top:13.8%; background:#ffaa4d; box-shadow:0 0 0 8px rgba(255,170,77,.12)"></div>
+              <div class="map-pill">11月1日 06:02 – 06:13</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="stat-strip">
+              <div><div class="n num">3.97<small> km</small></div><div class="l">距离</div></div>
+              <div><div class="n num">11<small> 分</small></div><div class="l">时长</div></div>
+              <div><div class="n num">0.65<small> kWh</small></div><div class="l">电量</div></div>
+            </div>
+          </div>
+
+          <div class="energy-badge" style="margin-bottom:12px">
+            <svg class="icon"><use href="#i-leaf"/></svg>
+            <div><div class="n num">16.3 <small>kWh/100km</small></div><div class="cap-sm" style="margin-top:2px">百公里电耗</div></div>
+            <div class="cap">优于 30 天平均</div>
+          </div>
+
+          <div class="chart-card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">速度</span><span class="v">最高 66 km/h</span></div>
+            <svg class="chart" viewBox="0 0 326 108" preserveAspectRatio="none">
+              <defs><linearGradient id="gSpeed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc7ff" stop-opacity=".32"/><stop offset="1" stop-color="#5cc7ff" stop-opacity=".02"/></linearGradient></defs>
+              <path d="M0 96 18 90 36 82 54 64 72 52 90 60 108 44 126 30 144 38 162 58 180 66 198 54 216 42 234 30 252 40 270 58 288 70 306 80 326 88 326 108 0 108Z" fill="url(#gSpeed)"/>
+              <path d="M0 96 18 90 36 82 54 64 72 52 90 60 108 44 126 30 144 38 162 58 180 66 198 54 216 42 234 30 252 40 270 58 288 70 306 80 326 88" stroke="#5cc7ff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            </svg>
+            <div class="axis"><span>06:02</span><span>06:06</span><span>06:13</span></div>
+          </div>
+
+          <div class="chart-card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">功率</span><span class="v">最低 -43 kW</span></div>
+            <svg class="chart" viewBox="0 0 326 100" preserveAspectRatio="none">
+              <defs><linearGradient id="gPower" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ad8cff" stop-opacity=".28"/><stop offset="1" stop-color="#ad8cff" stop-opacity=".02"/></linearGradient></defs>
+              <path d="M0 70 20 58 40 40 60 26 80 18 100 30 120 48 140 62 160 52 180 38 200 22 220 34 240 56 260 74 280 66 300 78 326 72 326 100 0 100Z" fill="url(#gPower)"/>
+              <path d="M0 70 20 58 40 40 60 26 80 18 100 30 120 48 140 62 160 52 180 38 200 22 220 34 240 56 260 74 280 66 300 78 326 72" stroke="#ad8cff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="card">
+            <div class="mini-row"><span class="label">起点</span><span class="value">祥符 · 拱墅区</span></div>
+            <div class="mini-row"><span class="label">终点</span><span class="value">和美弄</span></div>
+            <div class="mini-row"><span class="label">车外均温</span><span class="value">24.8 °C</span></div>
+            <div class="mini-row"><span class="label">车内均温</span><span class="value">21.5 °C</span></div>
+            <div class="mini-row"><span class="label">爬升 / 下降</span><span class="value">14 m / 18 m</span></div>
+            <div class="mini-row"><span class="label">续航消耗</span><span class="value">4.4 km</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">03</span><span class="name">行程详情</span><span class="api">/drives/:id</span></div>
+  </div>
+
+  <!-- 04 CHARGING -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div><div class="nav-title">充电</div><div class="nav-sub">近 30 天</div></div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-chart"/></svg></div></div>
+          </div>
+          <div class="filters"><div class="seg"><div>7 天</div><div class="on">30 天</div><div>90 天</div></div></div>
+
+          <div class="card" style="margin-bottom:10px">
+            <div class="stat-strip">
+              <div><div class="n num">72.2<small> kWh</small></div><div class="l">已充电量</div></div>
+              <div><div class="n num">3<small> 次</small></div><div class="l">充电</div></div>
+              <div><div class="n" style="font-size:14px; color:var(--muted); padding-top:3px">未记录</div><div class="l">费用</div></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <div class="charge-row">
+              <div class="charge-top">
+                <div class="charge-icon"><svg class="icon"><use href="#i-plug"/></svg></div>
+                <div class="charge-main">
+                  <div class="where">石祥路充电站</div>
+                  <div class="when">11月1日 13:30 · 29 分钟 · 车外 25°C</div>
+                  <div class="soc"><span class="p num">35%</span><span class="track"><span class="fill" style="left:35%; right:19%"></span></span><span class="p num">81%</span></div>
+                </div>
+                <div class="charge-right"><div class="kwh num">33.9 kWh</div><div class="dur">快充</div></div>
+              </div>
+            </div>
+            <div class="charge-row">
+              <div class="charge-top">
+                <div class="charge-icon"><svg class="icon"><use href="#i-plug"/></svg></div>
+                <div class="charge-main">
+                  <div class="where">吉如路</div>
+                  <div class="when">10月26日 13:08 · 36 分钟 · 车外 24°C</div>
+                  <div class="soc"><span class="p num">28%</span><span class="track"><span class="fill" style="left:28%; right:20%"></span></span><span class="p num">80%</span></div>
+                </div>
+                <div class="charge-right"><div class="kwh num">38.3 kWh</div><div class="dur">快充</div></div>
+              </div>
+            </div>
+            <div class="charge-row">
+              <div class="charge-top">
+                <div class="charge-icon"><svg class="icon"><use href="#i-plug"/></svg></div>
+                <div class="charge-main">
+                  <div class="where">城西银泰</div>
+                  <div class="when">10月18日 19:42 · 22 分钟 · 车外 22°C</div>
+                  <div class="soc"><span class="p num">41%</span><span class="track"><span class="fill" style="left:41%; right:22%"></span></span><span class="p num">78%</span></div>
+                </div>
+                <div class="charge-right"><div class="kwh" style="font-size:14px">—</div><div class="dur">进行中</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cap-sm" style="margin:12px 4px">费用未记录的场次显示 “未记录”，不折算为 0 元。</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab on"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+          <div class="tab"><svg class="icon"><use href="#i-sliders"/></svg>设置</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">04</span><span class="name">充电列表</span><span class="api">/charges</span></div>
+  </div>
+
+  <!-- 05 CHARGE DETAIL -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div><div class="nav-title" style="font-size:18px">充电详情</div></div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-pin"/></svg></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="big-hero">
+              <div class="cap">本次充入</div>
+              <div class="n num" style="margin-top:6px">33.9<small>kWh</small></div>
+            </div>
+            <div class="row-between" style="margin-top:14px">
+              <div><div class="cap-sm">电量</div><div class="value" style="font-size:15px; font-weight:600">35% → 81%</div></div>
+              <div><div class="cap-sm">时长</div><div class="value" style="font-size:15px; font-weight:600">29 分钟</div></div>
+              <div><div class="cap-sm">地点</div><div class="value" style="font-size:15px; font-weight:600">石祥路充电站</div></div>
+            </div>
+          </div>
+
+          <div class="chart-card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">充电功率</span><span class="v">峰值 58 kW</span></div>
+            <svg class="chart" viewBox="0 0 326 110" preserveAspectRatio="none">
+              <defs><linearGradient id="gChg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc7ff" stop-opacity=".34"/><stop offset="1" stop-color="#5cc7ff" stop-opacity=".02"/></linearGradient></defs>
+              <path d="M0 96 16 88 32 62 48 34 64 14 80 10 96 18 112 26 128 30 144 34 160 38 176 44 192 52 208 60 224 68 240 76 256 82 272 86 288 88 304 90 326 92 326 110 0 110Z" fill="url(#gChg)"/>
+              <path d="M0 96 16 88 32 62 48 34 64 14 80 10 96 18 112 26 128 30 144 34 160 38 176 44 192 52 208 60 224 68 240 76 256 82 272 86 288 88 304 90 326 92" stroke="#5cc7ff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            </svg>
+            <div class="axis"><span>13:30</span><span>13:44</span><span>13:59</span></div>
+          </div>
+
+          <div class="chart-card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">电量</span><span class="v">35% → 81%</span></div>
+            <svg class="chart" viewBox="0 0 326 86" preserveAspectRatio="none">
+              <path d="M0 70C40 62 60 48 84 40s48-8 72-14 54-10 82-14 56-4 88-6" stroke="#5cd98f" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M0 70C40 62 60 48 84 40s48-8 72-14 54-10 82-14 56-4 88-6" stroke="rgba(92,217,143,.05)" stroke-width="14" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="card">
+            <div class="mini-row"><span class="label">电压</span><span class="value">230 V</span></div>
+            <div class="mini-row"><span class="label">电流</span><span class="value">16 A</span></div>
+            <div class="mini-row"><span class="label">相数</span><span class="value">3</span></div>
+            <div class="mini-row"><span class="label">连接器</span><span class="value">IEC</span></div>
+            <div class="mini-row"><span class="label">车外温度</span><span class="value">25.0 °C</span></div>
+            <div class="mini-row"><span class="label">费用</span><span class="value" style="color:var(--muted)">未记录</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">05</span><span class="name">充电详情</span><span class="api">/charges/:id</span></div>
+  </div>
+
+  <!-- 06 STATS -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div><div class="nav-title">统计</div><div class="nav-sub">近 30 天 · 按日</div></div>
+            </div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-refresh"/></svg></div></div>
+          </div>
+          <div class="filters">
+            <div class="filterbar">
+              <div class="seg" style="flex:1"><div>7 天</div><div class="on">30 天</div><div>90 天</div></div>
+              <div class="seg small" style="width:104px"><div class="on">按日</div><div>按月</div></div>
+            </div>
+          </div>
+
+          <div class="tiles" style="margin-bottom:12px">
+            <div class="tile"><div class="label">总里程</div><div class="value num">118.5 <small>km</small></div></div>
+            <div class="tile"><div class="label">行程次数</div><div class="value num">12 <small>次</small></div></div>
+            <div class="tile"><div class="label">充电电量</div><div class="value num">72.2 <small>kWh</small></div></div>
+            <div class="tile"><div class="label">充电费用</div><div class="value num" style="color:var(--muted)">—</div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="chart-head"><span class="t">每日里程</span><span class="v">km</span></div>
+            <div class="bars-chart">
+              <i class="zero"></i><i style="height:6%"></i><i class="zero"></i><i style="height:4%"></i><i class="zero"></i><i style="height:9%"></i><i class="zero"></i><i class="zero"></i><i style="height:12%"></i><i class="zero"></i><i style="height:5%"></i><i class="zero"></i><i style="height:18%"></i><i class="zero"></i><i style="height:10%"></i><i style="height:24%"></i><i class="zero"></i><i class="zero"></i><i style="height:14%"></i><i class="zero"></i><i style="height:32%"></i><i style="height:46%"></i><i class="zero"></i><i style="height:22%"></i><i class="zero"></i><i style="height:38%"></i><i class="zero"></i><i style="height:28%"></i><i style="height:12%"></i><i style="height:8%"></i><i class="zero"></i><i style="height:3%"></i>
+            </div>
+            <div class="axis"><span>10/03</span><span>10/13</span><span>10/23</span><span>11/02</span></div>
+          </div>
+
+          <div class="card">
+            <div class="chart-head"><span class="t">充电电量</span><span class="v">kWh</span></div>
+            <div class="bars-chart" style="height:80px">
+              <i style="height:8%"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i style="height:14%"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i style="height:30%"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i style="height:96%"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i class="zero"></i><i style="height:54%"></i><i class="zero"></i><i class="zero"></i>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <div class="chart-head"><span class="t">行程时长</span><span class="v">分钟</span></div>
+            <div class="bars-chart" style="height:80px">
+              <i class="zero"></i><i style="height:8%"></i><i class="zero"></i><i style="height:6%"></i><i class="zero"></i><i style="height:14%"></i><i class="zero"></i><i class="zero"></i><i style="height:18%"></i><i class="zero"></i><i style="height:8%"></i><i class="zero"></i><i style="height:26%"></i><i class="zero"></i><i style="height:15%"></i><i style="height:34%"></i><i class="zero"></i><i class="zero"></i><i style="height:20%"></i><i class="zero"></i><i style="height:45%"></i><i style="height:62%"></i><i class="zero"></i><i style="height:30%"></i><i class="zero"></i><i style="height:52%"></i><i class="zero"></i><i style="height:38%"></i><i style="height:16%"></i><i style="height:10%"></i><i class="zero"></i>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px; padding:12px">
+            <div class="entry">
+              <div class="thumb">
+                <svg viewBox="0 0 52 52"><path d="M6 42C16 36 18 26 26 24s10-8 16-12" stroke="#5cc7ff" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="6" cy="42" r="3" fill="#5cd98f"/><circle cx="42" cy="12" r="3" fill="#ffaa4d"/></svg>
+              </div>
+              <div style="flex:1"><div class="t">历史轨迹地图</div><div class="s">回放近 30 天的行驶路线</div></div>
+              <svg class="icon" style="color:var(--faint)"><use href="#i-chevron"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab on"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+          <div class="tab"><svg class="icon"><use href="#i-sliders"/></svg>设置</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">06</span><span class="name">统计 Stats</span><span class="api">/stats</span></div>
+  </div>
+
+  <!-- 07 HISTORY -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content" style="padding:0; display:flex; flex-direction:column; overflow:hidden">
+          <div class="nav head bleed wrapped">
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-back"/></svg></div><div class="nav-title" style="font-size:18px">历史轨迹</div></div>
+            <div class="nav-group"><div class="nav-btn"><svg class="icon"><use href="#i-map"/></svg></div></div>
+          </div>
+          <div class="filters" style="margin:0 12px 12px"><div class="seg"><div>7 天</div><div class="on">30 天</div><div>90 天</div></div></div>
+
+          <div class="map" style="flex:1; min-height:0; height:auto; border-radius:0">
+            <div class="water"></div>
+            <svg class="roads" viewBox="0 0 390 430" preserveAspectRatio="none">
+              <path d="M-20 340C60 320 120 288 160 250s70-58 120-84 90-44 140-50" stroke="#26344a" stroke-width="12" fill="none"/>
+              <path d="M70-10c8 70 2 130-12 186s-8 120 6 260" stroke="#243147" stroke-width="8" fill="none"/>
+              <path d="M280-10c-10 70 0 122 22 166s30 110 22 280" stroke="#243147" stroke-width="7" fill="none"/>
+              <path d="M-10 90c70 10 120 26 158 58s80 46 130 40 84 8 122 30" stroke="#202c40" stroke-width="6" fill="none"/>
+              <path d="M-10 240c80 0 128 4 170-8s84-34 120-24 74 0 120 14" stroke="#202c40" stroke-width="5" fill="none"/>
+            </svg>
+            <svg class="roads" viewBox="0 0 390 430" preserveAspectRatio="none">
+              <path d="M84 366c26-20 46-52 60-92s30-58 58-66 44 6 64-18 20-52 46-64 44-8 62-20" stroke="rgba(92,199,255,.16)" stroke-width="14" fill="none" stroke-linecap="round"/>
+              <path d="M84 366c26-20 46-52 60-92s30-58 58-66 44 6 64-18 20-52 46-64 44-8 62-20" stroke="#5cc7ff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              <path d="M108 300c40 6 64 2 88-16s34-44 62-46 48 4 66-14" stroke="rgba(92,199,255,.55)" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="1 7"/>
+            </svg>
+            <div class="pin" style="left:21.5%; top:85%; background:#5cd98f; box-shadow:0 0 0 9px rgba(92,217,143,.12)"></div>
+            <div class="pin" style="left:95%; top:25%; background:#ffaa4d; box-shadow:0 0 0 9px rgba(255,170,77,.12)"></div>
+            <div class="map-pill">30 天 · 62 段行程</div>
+            <div style="position:absolute; right:12px; top:14px; display:flex; gap:2px; padding:3px; border:1px solid transparent; border-radius:14px; background:linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.05)) padding-box, var(--glass-rim) border-box; -webkit-backdrop-filter:blur(16px) saturate(170%); backdrop-filter:blur(16px) saturate(170%); box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px rgba(0,0,0,.28)">
+              <span style="padding:6px 10px; font-size:11px; border-radius:11px; color:var(--accent); background:linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.05)); box-shadow:inset 0 1px 0 rgba(255,255,255,.28)">标准</span>
+              <span style="padding:7px 11px; font-size:11px; color:var(--muted)">卫星</span>
+            </div>
+          </div>
+
+          <div class="history-sheet">
+            <div class="card">
+              <div class="stat-strip">
+                <div><div class="n num">118<small> km</small></div><div class="l">约轨迹长度</div></div>
+                <div><div class="n num">1,000</div><div class="l">采样点</div></div>
+                <div><div class="n" style="font-size:13px; padding-top:4px">10/03 – 11/02</div><div class="l">时间范围</div></div>
+              </div>
+              <div class="legend-map">
+                <span><i style="background:#5cd98f"></i>起点</span>
+                <span><i style="background:#ffaa4d"></i>终点</span>
+                <span><i style="background:#5cc7ff"></i>轨迹</span>
+                <span style="margin-left:auto">距离为采样点估算</span>
+              </div>
+            </div>
+
+            <div class="banner" style="margin-top:12px">
+              <svg class="icon"><use href="#i-pin"/></svg>
+              地图已应用 WGS-84 → GCJ-02 校正，可在设置中关闭。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">07</span><span class="name">历史轨迹 History</span><span class="api">/positions</span></div>
+  </div>
+
+  <!-- 08 SETTINGS -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="content">
+          <div class="nav head">
+            <div class="nav-group">
+              <div><div class="nav-title">设置</div><div class="nav-sub">只读 · HTTPS 安全连接</div></div>
+            </div>
+          </div>
+
+          <div class="group-label" style="margin-top:10px">服务器</div>
+          <div class="settings-group">
+            <div class="srow"><span class="label">服务器地址</span><span class="value">https://api.example.com</span><svg class="icon sm"><use href="#i-chevron"/></svg></div>
+            <div class="srow"><span class="label">API Token</span><span class="value">••••••••••••</span><svg class="icon sm"><use href="#i-chevron"/></svg></div>
+            <div class="srow"><span class="label" style="display:flex; align-items:center; gap:7px"><i class="dot ok" style="background:var(--green)"></i>连接正常 · 1 辆车</span><span style="font-size:12px; color:var(--accent)">测试连接</span></div>
+          </div>
+
+          <div class="group-label" style="margin-top:18px">车辆</div>
+          <div class="settings-group">
+            <div class="srow"><span class="label">★Roadster Lite™</span><span class="value">Model 3 · LR AWD</span><svg class="icon sm"><use href="#i-chevron"/></svg></div>
+          </div>
+
+          <div class="group-label" style="margin-top:18px">地图</div>
+          <div class="settings-group">
+            <div class="srow"><div style="flex:1"><div class="label">中国坐标偏移校正</div><div class="cap-sm" style="margin-top:3px">WGS-84 → GCJ-02 · 海外自动关闭</div></div><span class="switch"></span></div>
+          </div>
+
+          <div class="group-label" style="margin-top:18px">关于</div>
+          <div class="settings-group">
+            <div class="srow"><span class="label">版本</span><span class="value">0.1.0 (1)</span></div>
+            <div class="srow"><span class="label">数据来源</span><span class="value">TeslaMate · 只读</span></div>
+            <div class="srow"><span class="label">API</span><span class="value">/v1 · 本机 Mac</span></div>
+          </div>
+
+          <div class="destructive" style="margin-top:18px">清除 Token</div>
+
+          <div class="cap-sm" style="margin:14px 6px 0; line-height:1.6">清除后需重新输入服务器地址与 Token。车辆位置、行程与充电记录不会被删除。</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg class="icon"><use href="#i-gauge"/></svg>实时</div>
+          <div class="tab"><svg class="icon"><use href="#i-route"/></svg>行程</div>
+          <div class="tab"><svg class="icon"><use href="#i-zap"/></svg>充电</div>
+          <div class="tab"><svg class="icon"><use href="#i-chart"/></svg>统计</div>
+          <div class="tab on"><svg class="icon"><use href="#i-sliders"/></svg>设置</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">08</span><span class="name">设置 Settings</span><span class="api">/cars</span></div>
+  </div>
+
+  <!-- 09 ONBOARDING -->
+  <div class="frame">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="status-right"><span class="bars"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="batt"></span></span></div>
+        <div class="onboard">
+          <div class="glyph"><svg class="icon lg" style="width:34px; height:34px"><use href="#i-zap"/></svg></div>
+          <h2>连接你的 TeslaMate</h2>
+          <p>使用公网 HTTPS 代理地址和 Token 连接。<br>手机无需安装 Tailscale。</p>
+
+          <div class="field"><div class="fl">服务器地址</div><div class="fv">https://api.example.com</div></div>
+          <div class="field"><div class="fl">API Token</div><div class="fv masked">••••••••••••••••••••</div></div>
+          <div class="primary">测试并保存</div>
+          <div class="hint">填写已部署的公网 HTTPS 代理地址。<br>Token 保存在系统钥匙串，不会写入明文。</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption"><span class="idx">09</span><span class="name">首次启动引导</span><span class="api">Keychain</span></div>
+  </div>
+
+</div>
+
+<script>
+  // The header is pinned. It starts borderless and full-bleed, and wraps into a glass
+  // capsule as soon as the page behind it starts to move.
+  document.querySelectorAll('.content').forEach((content) => {
+    const nav = content.querySelector('.nav.head');
+    if (!nav || nav.classList.contains('wrapped')) return;
+
+    const update = () => {
+      nav.classList.toggle('is-stuck', content.scrollTop > 8);
+    };
+    content.addEventListener('scroll', update, { passive: true });
+    update();
+  });
+</script>
+</body>
+</html>
