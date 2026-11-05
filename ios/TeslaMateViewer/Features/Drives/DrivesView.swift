@@ -30,7 +30,6 @@ struct DrivesView: View {
                         selection: $model.period
                     )
                     .padding(.horizontal, Theme.Spacing.l)
-                    .padding(.top, Theme.Spacing.s)
 
                     content
                 }

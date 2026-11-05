@@ -1,4 +1,4 @@
-# Odo —— 技术栈
+# Oto —— 技术栈
 
 本文区分已有代码与规划中的工作。版本描述的是仓库配置，不代表部署已验证。功能进度见 [STATUS.zh-CN.md](STATUS.zh-CN.md)。
 
@@ -40,7 +40,7 @@ API 配置为监听 Mac 的回环地址，并加入 TeslaMate 已有的 Docker �
 | Node.js 22、JavaScript ES modules、`node:http` | 独立 JSON API，不使用 Web 框架 | 已有代码；`server/package.json` 要求 Node ≥22，Docker 镜像使用 Node 22 Alpine。 |
 | `pg` ^8.23.1 | 查询 TeslaMate 的 PostgreSQL 数据 | 直接依赖；锁文件解析为 8.23.1。 |
 | `mqtt` ^5.16.1 | 订阅 TeslaMate 实时 MQTT 主题 | 直接依赖；锁文件解析为 5.16.1。 |
-| PostgreSQL | 行程、充电、位置和统计等历史数据 | TeslaMate 现有服务；Odo 计划使用仅有 SELECT 权限的角色。版本由实际 TeslaMate 部署决定。 |
+| PostgreSQL | 行程、充电、位置和统计等历史数据 | TeslaMate 现有服务；Oto 计划使用仅有 SELECT 权限的角色。版本由实际 TeslaMate 部署决定。 |
 | MQTT / Mosquitto | 车辆状态消息与内存实时缓存 | TeslaMate 现有服务；版本取决于实际部署。 |
 | Node 内置测试运行器（`node --test`） | API 单元测试 | 已在 `server/package.json` 配置；已有测试结果记录见 STATUS。 |
 

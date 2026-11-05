@@ -1,4 +1,4 @@
-# TeslaMate iOS Viewer
+# Oto — TeslaMate iOS Viewer
 
 A native iOS app for TeslaMate's live and historical vehicle data.
 
@@ -41,7 +41,7 @@ SQL
 ## 2. Configure the API
 
 ```bash
-cd odo
+cd /Users/sevan/ai-tasks/oto
 cp .env.example .env
 # Set DATABASE_PASS to the password above and API_TOKEN to:
 openssl rand -base64 32
@@ -58,7 +58,7 @@ It is normally `startfile_default`, as in `compose.yml`.
 ## 3. Run
 
 ```bash
-cd odo
+cd /Users/sevan/ai-tasks/oto
 docker compose up -d --build
 docker compose logs -f api
 ```
@@ -126,7 +126,7 @@ fresh API data if the server or its containers are unavailable.
 Requires Xcode 15+ and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
-cd odo/ios
+cd /Users/sevan/ai-tasks/oto/ios
 xcodegen generate
 open TeslaMateViewer.xcodeproj
 ```
@@ -134,7 +134,7 @@ open TeslaMateViewer.xcodeproj
 Or from the command line:
 
 ```bash
-cd odo/ios
+cd /Users/sevan/ai-tasks/oto/ios
 xcodebuild -project TeslaMateViewer.xcodeproj -scheme TeslaMateViewer \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
   CODE_SIGNING_ALLOWED=NO build
@@ -164,7 +164,7 @@ disconnected API.
 ## Layout
 
 ```
-odo/
+oto/
   compose.yml
   server/          Node 22 API (pg + mqtt)
   ios/             SwiftUI app (XcodeGen project)

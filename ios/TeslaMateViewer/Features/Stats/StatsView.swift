@@ -132,9 +132,9 @@ struct StatsView: View {
                 .padding(.horizontal, Theme.Spacing.l)
             }
 
+            entries
             tiles
             charts
-            entries
         }
     }
 

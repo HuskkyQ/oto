@@ -1,6 +1,7 @@
-# Odo 欧豆 — Name and Mark
+# Oto — Name and Mark
 
-Status: naming decided, mark still open · 2026-11-02 · Owner: Steven
+Status: renamed to Oto 2026-11-05; three-word expansion and Chinese name still open; mark still
+open · Owner: Steven
 
 Working note for the app's identity. Product requirements live in [`PRD.md`](PRD.md); visual
 language in [`UI-DESIGN.md`](UI-DESIGN.md). This file only covers what the app is *called* and what
@@ -12,30 +13,41 @@ it *looks like as an icon*.
 
 | | |
 |---|---|
-| English | **Odo** |
-| Chinese | **欧豆** |
-| Colloquial | 小豆, 豆子 |
-| Bundle id | `com.sevan.TeslaMateViewer` → `com.sevan.odo` (not yet changed) |
+| English | **Oto** |
+| Expansion | O + T(Tesla) + O — three candidates below, not yet picked |
+| Chinese | 待定 (the old name was 欧豆) |
+| Colloquial | 待定 |
+| Bundle id | `com.sevan.TeslaMateViewer` → `com.sevan.oto` (not yet changed) |
 
-**Why this and not a descriptive noun.** People get attached to a creature, not a concept.
-"Odograph" is a beautiful word — it is the real name of an instrument that records distance — and
-completely forgettable. "Odo" is three letters, one syllable, sayable in Chinese, and it can hold
-a face. The choice is: character names are stickier but date faster; instrument names age better
-and get forgotten. We chose sticky.
+**Why Oto.** Three letters, one syllable, and the middle letter is a hook: the name can be spelled
+out as O + Tesla + O, which gives it a meaning without putting "Tesla" on the icon or the store
+listing. "Oto" also reads as *auto* in several languages, which is what the app is about without
+naming a trademark.
 
-**Why 欧豆 specifically.** It is phonetically almost exactly "Odo", and 豆 gives the mascot a shape
-for free. It also reads as a name rather than a label, so empty states and errors can speak in it.
+### Three-word expansions
+
+The middle word is fixed as **Tesla**; the first and last start with O. Pick one to use as the
+tagline and in docs — never as the shipping name (see the trademark note).
+
+| | Expansion | Reads as | Trade-off |
+|---|---|---|---|
+| **1** | **Open Tesla Observer** | 开源的特斯拉观测器 | **recommended.** Closest to what the app does — read-only observation of live and historical data. "Open" is earned: no vendor lock-in, no write access |
+| 2 | **Own Tesla Overview** | 你自己的特斯拉全景 | Emphasises self-hosting and data ownership, which is the real reason this exists. Weaker as a description of the UI |
+| 3 | **Onboard Tesla Overview** | 随车上路的特斯拉总览 | *Onboard* carries both "in the car" and "getting started". Friendlier, but sounds like an in-vehicle product rather than a phone app |
 
 ### Voice
 
 The name buys a tone. Use it in copy, not just on the icon:
 
-- Empty state: 「小豆还没醒」 (not 「暂无数据」)
-- Loading: 「小豆正在数里程」
-- Stale: 「小豆联系不上车了」
-- Never: exclamation marks, emoji, or baby-talk beyond this.
+- Empty state: 「Oto 还没看到数据」 (not 「暂无数据」)
+- Loading: 「Oto 正在数里程」
+- Stale: 「Oto 联系不上车了」
+- Never: exclamation marks, emoji, or baby-talk. The old 小豆/豆子 voice belonged to the 欧豆 name;
+  it is not carried over unless 豆 survives in the Chinese name.
 
 ### Names considered and rejected
+
+Kept from the original (Odo) naming round, so the reasoning is not lost:
 
 | Name | Type | Why not |
 |---|---|---|
@@ -48,8 +60,9 @@ The name buys a tone. Use it in copy, not just on the icon:
 | 表弟 | pun (meter + little brother) | funniest of the set, unusable as a shipping name; keep as an easter egg |
 
 **Trademark note:** "Tesla" in the name is rejected by App Store review under guideline 5.2.1
-(third-party trademark). Fine for TestFlight or a personal build, unusable in the store. Every name
-above clears that. The shipping name is Odo / 欧豆, not "TeslaMate Viewer".
+(third-party trademark). Fine for TestFlight or a personal build, unusable in the store. This is
+why the shipping name is **Oto**, and the O + Tesla + O expansion and any "TeslaMate" wording stay
+in docs and code, never on the icon, the display name or the store listing.
 
 ---
 
@@ -109,13 +122,15 @@ a knowing risk if it ever ships.
 
 ## 4. Open items
 
+- [ ] Pick one of the three expansions (Open Tesla Observer recommended)
+- [ ] Pick a Chinese name
 - [ ] Pick a mark (round 4: A or B — or a new direction)
 - [ ] Cut the 1024 px asset and the `AppIcon` entries in the Xcode asset catalog
-- [ ] Rename `project.yml`: `name`, `PRODUCT_NAME`, `PRODUCT_BUNDLE_IDENTIFIER`, display name
-- [ ] Display name is currently `TeslaMate` — it claims to *be* the upstream project
-- [ ] Localised display name: `INFOPLIST_KEY_CFBundleDisplayName` takes one string, so 欧豆 on a
-      Chinese phone and Odo on an English one needs `zh-Hans.lproj/InfoPlist.strings`
-- [ ] Wordmark: "odo 欧豆" in the current mockup is the system font, not a designed lockup
+- [ ] Rename `project.yml`: `name`, `PRODUCT_NAME`, `PRODUCT_BUNDLE_IDENTIFIER`
+- [ ] Display name is now `Oto`; the bundle id is still `com.sevan.TeslaMateViewer`
+- [ ] Localised display name: `INFOPLIST_KEY_CFBundleDisplayName` takes one string, so the Chinese
+      name on a Chinese phone and Oto on an English one needs `zh-Hans.lproj/InfoPlist.strings`
+- [ ] Wordmark: "oto" in the current mockup is the system font, not a designed lockup
 
 ## 5. Assets
 
@@ -126,9 +141,13 @@ a knowing risk if it ever ships.
 
 ## 中文摘要
 
-- **名字**：Odo / 欧豆，口语「小豆」。选角色名不选仪器名——好记优先于耐看。
-- **语气**：名字要进文案，不只是进图标。「小豆还没醒」而不是「暂无数据」。
+- **名字**：**Oto**，三词展开待定（O + Tesla + O），中文名待定；原名字 Odo / 欧豆 已弃用。
+  三个候选：**Open Tesla Observer**（推荐）、Own Tesla Overview、Onboard Tesla Overview。
+- **语气**：名字要进文案，不只是进图标。「Oto 还没看到数据」而不是「暂无数据」。小豆那套文案
+  随欧豆一起退役，除非中文名里保留「豆」。为什么叫 Oto：三个字母、一个音节，中间 T 能挂住
+  Tesla，既是缩写又是谐音 *auto*，而且商店名只用 Oto，不碰商标。
 - **图标**：探索了四轮。前三轮（玻璃豆脸、扁平小球、红色小球表情）均已否决；第四轮是闪电，
   其中 **B（黑底红闪电）推荐**，C（路线闪电）已判定失败，不再候选。
 - **颜色**：`#E82127` 是第三方一致的"特斯拉红"，但没有官方规范确认；介意商标可用 `#D6232A`。
-- **待办**：图标尚未定稿，资源目录、工程改名、中英文显示名都还没动。
+- **待办**：三词展开、中文名、图标均未定稿；资源目录、工程改名、显示名还没动（显示名已改为
+  Oto，Bundle id 仍是 `com.sevan.TeslaMateViewer`）。

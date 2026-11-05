@@ -1,4 +1,4 @@
-# Odo 欧豆 — Completion Tracker
+# Oto — Completion Tracker
 
 Living checklist for [`PRD.md`](PRD.md). Tick an item when it is built **and** its acceptance
 criteria pass; a tick means "verified", not "written". IDs match the PRD and never change.

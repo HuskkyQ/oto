@@ -1,4 +1,4 @@
-# Odo —— UI 组件清单
+# Oto —— UI 组件清单
 
 介于 `Design/Theme.swift` 与九个页面之间的可复用层。设计规则见 [`UI-DESIGN.zh-CN.md`](UI-DESIGN.zh-CN.md)；
 本文只说明 **有哪些部件、每一个用在哪、哪些已经存在**。English version：[`UI-COMPONENTS.md`](UI-COMPONENTS.md)。

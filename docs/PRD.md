@@ -298,20 +298,20 @@ Open problems, unsolved and the reason this is deferred:
 
 ### DF-2 Charging cost at a third-party station — deferred, manual entry only
 
-The car charges somewhere Odo has no price for, and the operator's completion notice carries the
+The car charges somewhere Oto has no price for, and the operator's completion notice carries the
 amount. That notice is never an input: iOS gives no public API for reading another app's
 notifications, and neither a Notification Service Extension nor a message filter extension may
 store or forward their content. So the only path is for the user to supply the number, and the work
 is to make that nearly free.
 
-Odo already holds the session's energy, duration, start and end times, and location. The amount is
+Oto already holds the session's energy, duration, start and end times, and location. The amount is
 the single thing it cannot derive.
 
 - DF-2.1 **Entry point.** Charge Detail carries one action, "记一笔费用". **AC** Reachable in one tap
   from the session; a session that already has a cost shows the cost instead of the action.
 - DF-2.2 **Defaults.** The form presents the session's kWh, duration, station and start time as
   read-only context; the amount is the only input, with an optional note.
-  **AC** No field asks the user to retype a value Odo already has.
+  **AC** No field asks the user to retype a value Oto already has.
 - DF-2.3 **Clipboard pre-fill.** When the clipboard holds exactly one currency amount (e.g.
   `¥45.60`, `45.6元`), the amount field opens pre-filled, and the value stays visible and editable
   before saving. **AC** Text with no unambiguous amount leaves the field empty; nothing is saved
@@ -329,13 +329,13 @@ Rejected paths, and why:
 - **Operator APIs.** None are public.
 - **The completion notification.** Impossible on iOS, not merely difficult.
 - **Geofence tariffs.** TeslaMate's own `cost_per_unit` / `session_fee` remain the better answer for
-  a fixed station, and need no Odo code at all — this item exists for the stations where that
+  a fixed station, and need no Oto code at all — this item exists for the stations where that
   arithmetic does not match the bill.
 
 Open problems, and the reason this is deferred:
 
-- **Where the amount lives.** Odo is read-only by construction (NFR-1, SELECT-only role, no mutation
-  route). Keeping manually entered costs in Odo's own store preserves that but creates two sources
+- **Where the amount lives.** Oto is read-only by construction (NFR-1, SELECT-only role, no mutation
+  route). Keeping manually entered costs in Oto's own store preserves that but creates two sources
   of truth: the Stats total has to merge local amounts with the API's, and a session that later
   gains a TeslaMate cost has to reconcile. The alternative — a narrow endpoint that `UPDATE`s only
   `charging_processes.cost` — gives one number and breaks NFR-1. Undecided, and it gates the item.

@@ -1,8 +1,8 @@
 # 特特管家 (Teskeeper) — screen and feature reference
 
-Third-party Tesla companion app captured as a design and feature reference for Odo.
+Third-party Tesla companion app captured as a design and feature reference for Oto.
 中文版：[`REFERENCE-TETE.zh-CN.md`](REFERENCE-TETE.zh-CN.md). Screenshots: [`mockups/tete/`](mockups/tete/).
-Gap analysis and recommendations for Odo: [`GAP-ANALYSIS.md`](GAP-ANALYSIS.md).
+Gap analysis and recommendations for Oto: [`GAP-ANALYSIS.md`](GAP-ANALYSIS.md).
 
 ---
 
@@ -224,7 +224,7 @@ driving / parked consumption) and a month calendar marking days with drives (blu
   连接特特管家; database timezone.
 - 其他设置: 卡片管理, 蓝牙仪表, 开启 3D 模型, 停车悬浮窗, 充电悬浮窗.
 - 服务器配置: server URL, access token, 验证并保存设置 (this is how the app reads a
-  self-hosted TeslaMate-style API, which is the same pattern Odo uses).
+  self-hosted TeslaMate-style API, which is the same pattern Oto uses).
 - Toolbar: 免责声明 (in-app web page) and 赞助 APP.
 
 ### 13.1 卡片管理

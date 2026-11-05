@@ -1,8 +1,8 @@
 # 特特管家（Teskeeper）页面与功能参考
 
-第三方特斯拉伴侣 App 的完整页面记录，作为 Odo 的设计与功能参考。
+第三方特斯拉伴侣 App 的完整页面记录，作为 Oto 的设计与功能参考。
 English：[`REFERENCE-TETE.md`](REFERENCE-TETE.md)。截图目录：[`mockups/tete/`](mockups/tete/)。
-Odo 的缺口与补充建议：[`GAP-ANALYSIS.zh-CN.md`](GAP-ANALYSIS.zh-CN.md)。
+Oto 的缺口与补充建议：[`GAP-ANALYSIS.zh-CN.md`](GAP-ANALYSIS.zh-CN.md)。
 
 ---
 
@@ -211,7 +211,7 @@ HUD 预览（车速 + 功率）、启用实时更新、显示车速、显示功�
 - 电脑小组件：数据源「自建服务器 / 特特管家（BETA）」、授权状态与「连接特特管家」、
   数据库时区。
 - 其他设置：卡片管理、蓝牙仪表、开启 3D 模型、停车悬浮窗、充电悬浮窗。
-- 服务器配置：服务端 URL、Token、验证并保存设置——即通过自建 API 读取数据，与 Odo 的接入方式一致。
+- 服务器配置：服务端 URL、Token、验证并保存设置——即通过自建 API 读取数据，与 Oto 的接入方式一致。
 - 顶栏：免责声明（内置网页）、赞助 APP。
 
 ### 13.1 卡片管理

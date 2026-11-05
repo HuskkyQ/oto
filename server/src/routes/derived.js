@@ -361,8 +361,10 @@ export async function parking({ db, params, query, now }) {
      LEFT JOIN LATERAL (
        -- Every state gets a share, not just asleep/online: a car whose MQTT link dropped spends
        -- its parking time "offline", and calling that "awake" would overstate the drain.
-       SELECT array_agg(per_state.state ORDER BY per_state.minutes DESC) AS states,
-              array_agg(round(per_state.minutes) ORDER BY per_state.minutes DESC) AS state_minutes
+       -- Casts, not decoration: state is a Postgres enum, so pg hands back "{asleep,online}"
+       -- as a raw string instead of an array, and the same goes for an unbounded numeric[].
+       SELECT array_agg(per_state.state::text ORDER BY per_state.minutes DESC) AS states,
+              array_agg(round(per_state.minutes)::int ORDER BY per_state.minutes DESC) AS state_minutes
        FROM (
          SELECT st.state,
                 sum(extract(epoch FROM (

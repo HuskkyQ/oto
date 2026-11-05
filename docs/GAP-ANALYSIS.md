@@ -1,11 +1,11 @@
-# Odo vs Teskeeper — feature gap analysis
+# Oto vs Teskeeper — feature gap analysis
 
 Status: analysis complete, not yet scheduled · 2026-11-04 · Owner: Steven
 中文版：[`GAP-ANALYSIS.zh-CN.md`](GAP-ANALYSIS.zh-CN.md)
 Inputs: [`REFERENCE-TETE.md`](REFERENCE-TETE.md) (21 screens, 37 screenshots) and an audit of the
 current code (iOS: 4 tabs plus settings; server: 10 `/v1` routes).
 
-This document answers one question: **against Teskeeper, what should Odo add next, and in what
+This document answers one question: **against Teskeeper, what should Oto add next, and in what
 order.** It does not replace [`PRD.md`](PRD.md) — the PRD defines what v1 promises; this file only
 lists candidates beyond v1 and the reasoning behind them.
 
@@ -13,7 +13,7 @@ lists candidates beyond v1 and the reasoning behind them.
 
 ## 1. Conclusion
 
-Odo's v1 backbone is complete: live, drives, charging, stats and history are all usable end to end,
+Oto's v1 backbone is complete: live, drives, charging, stats and history are all usable end to end,
 and the drive detail is deeper than the reference app's (speed, power, battery and elevation on four
 charts sharing one time axis).
 
@@ -171,7 +171,7 @@ Vehicle automation and BLE keys (write operations), dashcam (hardware and USB), 
 ## 6. Three decisions to make first
 
 1. **A home screen or not.** The reference app has no tab bar and aggregates everything on one long
-   home page; Odo has four tabs. The recommendation is no home and no fifth tab — put today's board
+   home page; Oto has four tabs. The recommendation is no home and no fifth tab — put today's board
    and the timeline at the top of Live. A home screen only makes card management meaningful.
 2. **The Wh/km definition.** TeslaMate's `drives` table has no energy column, so list-level Wh/km
    means integrating `positions.power`. Either pre-compute and cache it per drive on the server, or
@@ -201,10 +201,10 @@ Vehicle automation and BLE keys (write operations), dashcam (hardware and USB), 
 
 ## 8. What not to copy
 
-- The reference app's charging cost is a placeholder on the detail screen; Odo's "cost not recorded"
+- The reference app's charging cost is a placeholder on the detail screen; Oto's "cost not recorded"
   is the correct behaviour.
 - Its "shared charging map" depends on its cloud service and an external station database; the
   self-hosted path cannot reproduce it.
 - Its notification feature is retired in the app itself, so it is not evidence of a required feature.
-- It has no tab bar and pushes everything onto one home page; Odo's four-tab structure is clearer.
+- It has no tab bar and pushes everything onto one home page; Oto's four-tab structure is clearer.
   Do not dismantle it in the name of parity.

@@ -1,4 +1,4 @@
-# Odo — UI Component Inventory
+# Oto — UI Component Inventory
 
 The reusable layer between `Design/Theme.swift` and the nine screens. Design rules live in
 [`UI-DESIGN.md`](UI-DESIGN.md); this document says only **what the parts are, where each one is

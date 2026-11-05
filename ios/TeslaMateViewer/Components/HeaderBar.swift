@@ -14,7 +14,12 @@ struct HeaderAction {
 
 /// Pinned title and actions. One fixed state: full-bleed, no capsule, no scroll-driven change.
 struct HeaderBar: View {
-    static let height: CGFloat = 54
+    /// The control row. Every page's bar is this tall whether or not it carries actions,
+    /// so switching tabs never moves the title or the buttons.
+    static let rowHeight: CGFloat = 36
+    /// Whole bar: the row plus its padding. The scroll inset reserves exactly this much,
+    /// so no page starts with its first row tucked under the bar.
+    static let height: CGFloat = rowHeight + 14 + 12
 
     let title: String
     var subtitle: String?
@@ -27,7 +32,7 @@ struct HeaderBar: View {
                 Button(action: backAction) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .semibold))
-                        .frame(width: 36, height: 36)
+                        .frame(width: Self.rowHeight, height: Self.rowHeight)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -49,6 +54,8 @@ struct HeaderBar: View {
                         .lineLimit(1)
                 }
             }
+            // A page without actions or a back button would otherwise be one button-height shorter.
+            .frame(minHeight: Self.rowHeight, alignment: .leading)
 
             Spacer(minLength: Theme.Spacing.s)
 
@@ -56,7 +63,7 @@ struct HeaderBar: View {
                 Button(action: action.action) {
                     Image(systemName: action.systemImage)
                         .font(.system(size: 17, weight: .medium))
-                        .frame(width: 36, height: 36)
+                        .frame(width: Self.rowHeight, height: Self.rowHeight)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -113,6 +120,9 @@ struct ScreenScaffold<Content: View>: View {
 
                     content
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        // One inset for every page: the first row sits the same distance
+                        // under the bar whether it is a card, a filter or a segmented control.
+                        .padding(.top, Theme.Spacing.s)
                 }
             }
             .safeAreaInset(edge: .top, spacing: 0) {

@@ -1,4 +1,4 @@
-# Odo — Technology Stack
+# Oto — Technology Stack
 
 This inventory separates code already present from planned work. Versions describe repository configuration, not a verified deployment. See [STATUS.md](STATUS.md) for feature progress.
 
@@ -40,7 +40,7 @@ No third-party iOS packages are declared in `ios/project.yml`. The 3D vehicle co
 | Node.js 22, JavaScript ES modules, `node:http` | Standalone JSON API without a web framework | Source present; `server/package.json` requires Node ≥22 and the Docker image uses Node 22 Alpine. |
 | `pg` ^8.23.1 | Query TeslaMate PostgreSQL data | Direct dependency; lockfile resolves 8.23.1. |
 | `mqtt` ^5.16.1 | Subscribe to live TeslaMate MQTT topics | Direct dependency; lockfile resolves 5.16.1. |
-| PostgreSQL | Historical trips, charges, positions and statistics | Existing TeslaMate service; Odo's intended role has SELECT access only. Version is supplied by the TeslaMate deployment. |
+| PostgreSQL | Historical trips, charges, positions and statistics | Existing TeslaMate service; Oto's intended role has SELECT access only. Version is supplied by the TeslaMate deployment. |
 | MQTT / Mosquitto | Vehicle state feed and in-memory live cache | Existing TeslaMate service; version depends on deployment. |
 | Node built-in test runner (`node --test`) | API unit tests | Configured in `server/package.json`; see STATUS for recorded results. |
 
