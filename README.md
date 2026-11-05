@@ -1,5 +1,7 @@
 # Oto
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 An iOS app for [TeslaMate](https://github.com/teslamate-org/teslamate): live state, charging and
 drive history, served by a small read-only HTTP API.
 
