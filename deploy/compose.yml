@@ -1,0 +1,88 @@
+name: oto-deploy
+
+services:
+  teslamate:
+    image: teslamate/teslamate:latest
+    restart: always
+    environment:
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:?run deploy.sh to generate .env}
+      - DATABASE_USER=teslamate
+      - DATABASE_PASS=${DATABASE_PASS:?}
+      - DATABASE_NAME=teslamate
+      - DATABASE_HOST=database
+      - MQTT_HOST=mosquitto
+    ports:
+      - "127.0.0.1:${TESLAMATE_PORT:-4000}:4000"
+    volumes:
+      - ./import:/opt/app/import
+    cap_drop:
+      - all
+    depends_on:
+      database:
+        condition: service_healthy
+
+  api:
+    build: ../server
+    restart: always
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=teslamate
+      - DATABASE_USER=teslamate_ro
+      - DATABASE_PASS=${RO_PASSWORD:?}
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - API_TOKEN=${API_TOKEN:?}
+      - PORT=8080
+    ports:
+      - "127.0.0.1:${API_PORT:-8080}:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+
+  database:
+    image: postgres:18-trixie
+    restart: always
+    environment:
+      - POSTGRES_USER=teslamate
+      - POSTGRES_PASSWORD=${DATABASE_PASS:?}
+      - POSTGRES_DB=teslamate
+    volumes:
+      - teslamate-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teslamate -d teslamate"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: always
+    command: mosquitto -c /mosquitto-no-auth.conf
+    volumes:
+      - mosquitto-conf:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+
+  grafana:
+    image: teslamate/grafana:latest
+    restart: always
+    environment:
+      - DATABASE_USER=teslamate
+      - DATABASE_PASS=${DATABASE_PASS:?}
+      - DATABASE_NAME=teslamate
+      - DATABASE_HOST=database
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - teslamate-grafana-data:/var/lib/grafana
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  teslamate-db:
+  teslamate-grafana-data:
+  mosquitto-conf:
+  mosquitto-data:

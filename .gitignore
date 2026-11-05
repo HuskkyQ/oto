@@ -1,5 +1,6 @@
 .env
 node_modules/
+deploy/import/
 ios/build/
 ios/DerivedData/
 ios/TeslaMateViewer.xcodeproj/
