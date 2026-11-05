@@ -2,8 +2,7 @@
 
 Status: analysis complete, not yet scheduled · 2026-11-04 · Owner: Steven
 中文版：[`GAP-ANALYSIS.zh-CN.md`](GAP-ANALYSIS.zh-CN.md)
-Inputs: [`REFERENCE-TETE.md`](REFERENCE-TETE.md) (21 screens, 37 screenshots) and an audit of the
-current code (iOS: 4 tabs plus settings; server: 10 `/v1` routes).
+Inputs: an audit of the current code (iOS: 4 tabs plus settings; server: 10 `/v1` routes).
 
 This document answers one question: **against Teskeeper, what should Oto add next, and in what
 order.** It does not replace [`PRD.md`](PRD.md) — the PRD defines what v1 promises; this file only

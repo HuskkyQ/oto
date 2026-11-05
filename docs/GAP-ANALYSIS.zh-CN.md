@@ -2,8 +2,7 @@
 
 状态：分析完成，待排期 · 2026-11-04 · 负责人：Steven
 English: [`GAP-ANALYSIS.md`](GAP-ANALYSIS.md)
-输入：[`REFERENCE-TETE.zh-CN.md`](REFERENCE-TETE.zh-CN.md)（21 个页面、37 张截图）与当前代码核对
-（iOS 4 个 tab + 设置页、服务端 10 条 `/v1` 路由）。
+输入：当前代码核对（iOS 4 个 tab + 设置页、服务端 10 条 `/v1` 路由）。
 
 本文回答一个问题：**对照特特管家，Oto 还需要补哪些功能，按什么顺序补。**
 它不替代 [`PRD.zh-CN.md`](PRD.zh-CN.md)——PRD 定义 v1 承诺，这里只列出 v1 之外的候选与判断。

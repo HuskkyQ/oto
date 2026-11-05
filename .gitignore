@@ -6,6 +6,9 @@ ios/DerivedData/
 ios/TeslaMateViewer.xcodeproj/
 
 .DS_Store
+docs/REFERENCE-TETE.md
+docs/REFERENCE-TETE.zh-CN.md
+docs/mockups/tete/
 .serena/
 .playwright-mcp/
 ios/.chart-shots/
